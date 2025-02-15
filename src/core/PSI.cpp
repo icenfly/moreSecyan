@@ -23,6 +23,11 @@ namespace SECYAN
 		MurmurHash3_x64_128((char *)&ele, 8, 14131, outarr);
 		// Must use the same seed for both SERVER and CLIENT!
 	}
+	
+	std::vector<uint64_t> PSI::Get_cuckooTable()
+	{
+	        return cuckooTable;
+	}
 
 	void PSI::AliceCuckooHash(uint32_t **AliceHashArrs, int threshold)
 	{

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend</title>
+</head>
+<body>
+
+<div id="output"></div>
+<button onclick="fetchData()">Get Result</button>
+
+<script>
+async function fetchData() {
+    try {
+        const response = await fetch('http://localhost:8080');
+        const data = await response.text();
+
+        // 在控制台输出文本数据
+        console.log('Received data:', data);
+
+        // 在页面中显示文本数据
+        displayText(data);
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+function displayText(text) {
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerText = text;
+}
+</script>
+</body>
+</html>
