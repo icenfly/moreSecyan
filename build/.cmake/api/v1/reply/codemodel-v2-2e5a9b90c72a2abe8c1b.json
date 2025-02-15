@@ -1,0 +1,548 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						8,
+						16,
+						17
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "extern/ABY",
+					"childIndexes" : 
+					[
+						2,
+						6,
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY-Debug-476f23cc89d092fab0fd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "extern/ABY"
+				},
+				{
+					"build" : "extern/ABY/extern/ENCRYPTO_utils",
+					"childIndexes" : 
+					[
+						3,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY.extern.ENCRYPTO_utils-Debug-c1d2eaa9b474fdbe9364.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "extern/ABY/extern/ENCRYPTO_utils"
+				},
+				{
+					"build" : "extern/ABY/extern/ENCRYPTO_utils/extern/relic",
+					"childIndexes" : 
+					[
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY.extern.ENCRYPTO_utils.extern.relic-Debug-811f4def1007872b9780.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 3,
+					"source" : "extern/ABY/extern/ENCRYPTO_utils/extern/relic"
+				},
+				{
+					"build" : "extern/ABY/extern/ENCRYPTO_utils/extern/relic/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY.extern.ENCRYPTO_utils.extern.relic.src-Debug-83771971ee0d2a84e33b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 3,
+					"source" : "extern/ABY/extern/ENCRYPTO_utils/extern/relic/src",
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"build" : "extern/ABY/extern/ENCRYPTO_utils/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY.extern.ENCRYPTO_utils.src-Debug-2cd3a66b0ad3b8cde420.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "extern/ABY/extern/ENCRYPTO_utils/src",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "extern/ABY/extern/OTExtension",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY.extern.OTExtension-Debug-7ae81363ad722d172620.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 4,
+					"source" : "extern/ABY/extern/OTExtension",
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"build" : "extern/ABY/src/abycore",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.ABY.src.abycore-Debug-6d90794cf26096210c8f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "extern/ABY/src/abycore",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "extern/libOTe",
+					"childIndexes" : 
+					[
+						9,
+						13,
+						14,
+						15
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.libOTe-Debug-fcdfd0cdb4bc148ab0c1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 5,
+					"source" : "extern/libOTe"
+				},
+				{
+					"build" : "extern/libOTe/cryptoTools",
+					"childIndexes" : 
+					[
+						10,
+						11,
+						12
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.libOTe.cryptoTools-Debug-b15ad95361805d1289f4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 6,
+					"source" : "extern/libOTe/cryptoTools"
+				},
+				{
+					"build" : "extern/libOTe/cryptoTools/cryptoTools",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.libOTe.cryptoTools.cryptoTools-Debug-0bf50517ecea29b3df52.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 6,
+					"source" : "extern/libOTe/cryptoTools/cryptoTools",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "extern/libOTe/cryptoTools/tests_cryptoTools",
+					"jsonFile" : "directory-extern.libOTe.cryptoTools.tests_cryptoTools-Debug-3b10f9e131084cb3f2d7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 6,
+					"source" : "extern/libOTe/cryptoTools/tests_cryptoTools",
+					"targetIndexes" : 
+					[
+						14
+					]
+				},
+				{
+					"build" : "extern/libOTe/cryptoTools/frontend_cryptoTools",
+					"jsonFile" : "directory-extern.libOTe.cryptoTools.frontend_cryptoTools-Debug-f06e9efe227b22754e4a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 6,
+					"source" : "extern/libOTe/cryptoTools/frontend_cryptoTools",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "extern/libOTe/libOTe",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.libOTe.libOTe-Debug-9cd25f9769f4b4fc07f0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "extern/libOTe/libOTe",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "extern/libOTe/libOTe_Tests",
+					"jsonFile" : "directory-extern.libOTe.libOTe_Tests-Debug-25875a85f6e3aca53096.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "extern/libOTe/libOTe_Tests",
+					"targetIndexes" : 
+					[
+						8
+					]
+				},
+				{
+					"build" : "extern/libOTe/frontend",
+					"jsonFile" : "directory-extern.libOTe.frontend-Debug-9ac24f49722fd3892a2a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "extern/libOTe/frontend",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "src/core",
+					"jsonFile" : "directory-src.core-Debug-36daa2e54a8600f0fb49.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/core",
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"build" : "src/example",
+					"jsonFile" : "directory-src.example-Debug-744338afe0a6a67636cb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/example",
+					"targetIndexes" : 
+					[
+						2,
+						9,
+						13
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						5
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						16,
+						17
+					],
+					"name" : "SECYAN",
+					"targetIndexes" : 
+					[
+						2,
+						9,
+						12,
+						13
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						4
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						7
+					],
+					"name" : "ABY",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						3
+					],
+					"directoryIndexes" : 
+					[
+						2,
+						5
+					],
+					"name" : "ENCRYPTO_utils",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3,
+						4
+					],
+					"name" : "RELIC",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6
+					],
+					"name" : "OTExtension",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						6
+					],
+					"directoryIndexes" : 
+					[
+						8,
+						13,
+						14,
+						15
+					],
+					"name" : "libOTe",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9,
+						10,
+						11,
+						12
+					],
+					"name" : "cryptoTools",
+					"parentIndex" : 5,
+					"targetIndexes" : 
+					[
+						3,
+						5,
+						14
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 7,
+					"id" : "aby::@5ac84cbf686098a90a6f",
+					"jsonFile" : "target-aby-Debug-5abefab04a7690b11783.json",
+					"name" : "aby",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "arith_objs::@66eb24acbfe27925ab07",
+					"jsonFile" : "target-arith_objs-Debug-9624efbac81599247fc7.json",
+					"name" : "arith_objs",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 17,
+					"id" : "benchmark::@6325e01fdd28660a86f8",
+					"jsonFile" : "target-benchmark-Debug-dd5d331c9ff67cdcc1ee.json",
+					"name" : "benchmark",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "cryptoTools::@3e108e8813c01c3a9cfa",
+					"jsonFile" : "target-cryptoTools-Debug-0f27d79c6f50b651eeaf.json",
+					"name" : "cryptoTools",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "encrypto_utils::@c038d60a5d11fd96290d",
+					"jsonFile" : "target-encrypto_utils-Debug-998dc91fc7e7cbdab1e9.json",
+					"name" : "encrypto_utils",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "frontend_cryptoTools::@c72a9bb2f0c7b7af1f9e",
+					"jsonFile" : "target-frontend_cryptoTools-Debug-064e03513f01773f720c.json",
+					"name" : "frontend_cryptoTools",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "frontend_libOTe::@d8ef65886411ecab3252",
+					"jsonFile" : "target-frontend_libOTe-Debug-b654460009505980ed5d.json",
+					"name" : "frontend_libOTe",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "libOTe::@e1a9d73a0e305907490b",
+					"jsonFile" : "target-libOTe-Debug-533406f2009fe1171649.json",
+					"name" : "libOTe",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "libOTe_Tests::@330f28c998ece9a70347",
+					"jsonFile" : "target-libOTe_Tests-Debug-97ea189b8dd1576da561.json",
+					"name" : "libOTe_Tests",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 17,
+					"id" : "main::@6325e01fdd28660a86f8",
+					"jsonFile" : "target-main-Debug-1a66a96e5caaa3d9baa8.json",
+					"name" : "main",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "otextension::@8d9ac117c87ed4fa8f9d",
+					"jsonFile" : "target-otextension-Debug-c14d19ef1d04b55a35d3.json",
+					"name" : "otextension",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "relic_s::@66eb24acbfe27925ab07",
+					"jsonFile" : "target-relic_s-Debug-17588678237228bab9cb.json",
+					"name" : "relic_s",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "secyan::@0618756b1ff51bca1a0e",
+					"jsonFile" : "target-secyan-Debug-94bba74b4eec6bfe7802.json",
+					"name" : "secyan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 17,
+					"id" : "secyandemo::@6325e01fdd28660a86f8",
+					"jsonFile" : "target-secyandemo-Debug-cbfbf8d83290c5e44c82.json",
+					"name" : "secyandemo",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "tests_cryptoTools::@3cea51dec3ffc4cca7b8",
+					"jsonFile" : "target-tests_cryptoTools-Debug-087ea4beaf616b940a31.json",
+					"name" : "tests_cryptoTools",
+					"projectIndex" : 6
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/ic/Desktop/SECYAN3/build",
+		"source" : "/home/ic/Desktop/SECYAN3"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

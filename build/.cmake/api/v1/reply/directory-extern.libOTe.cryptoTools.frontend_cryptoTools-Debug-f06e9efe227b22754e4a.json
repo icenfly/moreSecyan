@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "extern/libOTe/cryptoTools/frontend_cryptoTools",
+		"source" : "extern/libOTe/cryptoTools/frontend_cryptoTools"
+	}
+}

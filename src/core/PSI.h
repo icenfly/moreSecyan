@@ -25,6 +25,7 @@ namespace SECYAN
 		std::vector<uint32_t> CombineSharedPayload(std::vector<uint32_t> &payload, std::vector<uint32_t> &indicator);
 		std::vector<uint32_t> CuckooToAliceArray();
 		std::vector<uint32_t> GetIndicators(std::vector<uint64_t> &mask);
+		std::vector<uint64_t> Get_cuckooTable();
 
 	private:
 		int AliceSetSize, BobSetSize, numMegabins, megaBinLoad, gamma;

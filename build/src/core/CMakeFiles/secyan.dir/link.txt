@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsecyan.a CMakeFiles/secyan.dir/OEP.cpp.o CMakeFiles/secyan.dir/relation.cpp.o CMakeFiles/secyan.dir/MurmurHash3.cpp.o CMakeFiles/secyan.dir/PSI.cpp.o CMakeFiles/secyan.dir/poly.cpp.o CMakeFiles/secyan.dir/RNG.cpp.o CMakeFiles/secyan.dir/party.cpp.o CMakeFiles/secyan.dir/OT.cpp.o
+/usr/bin/ranlib libsecyan.a

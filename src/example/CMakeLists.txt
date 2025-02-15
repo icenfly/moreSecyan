@@ -8,10 +8,17 @@ add_executable(secyandemo
     secyandemo.cpp
 )
 
+add_executable(main
+    main.cpp
+)
+
 target_link_libraries(benchmark 
     PUBLIC secyan
     PUBLIC ENCRYPTO_utils::encrypto_utils
     PUBLIC Boost::program_options)
 
 target_link_libraries(secyandemo 
+    PUBLIC secyan)
+    
+target_link_libraries(main 
     PUBLIC secyan)
