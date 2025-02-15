@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSI Result Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            font-family: monospace;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PSI Result Viewer</h1>
+        
+        <div class="control-panel">
+            <button onclick="fetchData()">计算交集</button>
+            <button onclick="clearResults()">清除结果</button>
+        </div>
+
+        <div class="result-container">
+            <div id="status" class="status"></div>
+            <table id="resultTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Alice Data (A)</th>
+                        <th>Alice Data (B)</th>
+                        <th>Bob Data (C)</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody"></tbody>
+            </table>
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('http://localhost:8080');
+                const data = await response.text();
+                
+                // 显示状态信息
+                const statusDiv = document.getElementById('status');
+                statusDiv.textContent = '数据获取成功';
+                statusDiv.className = 'status success';
+
+                // 解析并显示数据
+                displayData(data);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                const statusDiv = document.getElementById('status');
+                statusDiv.textContent = '获取数据失败: ' + error.message;
+                statusDiv.className = 'status error';
+            }
+        }
+
+        function displayData(data) {
+            const outputDiv = document.getElementById('output');
+            const resultTable = document.getElementById('resultTable');
+            const resultBody = document.getElementById('resultBody');
+            
+            // 清空现有内容
+            resultBody.innerHTML = '';
+            
+            try {
+                // 尝试解析数据为JSON格式
+                const jsonData = JSON.parse(data);
+                
+                // 显示表格
+                resultTable.style.display = 'table';
+                
+                // 填充表格数据
+                jsonData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.a}</td>
+                        <td>${row.b}</td>
+                        <td>${row.c}</td>
+                    `;
+                    resultBody.appendChild(tr);
+                });
+            } catch (e) {
+                // 如果不是JSON格式，直接显示文本
+                outputDiv.textContent = data;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('output').textContent = '';
+            document.getElementById('resultTable').style.display = 'none';
+            document.getElementById('status').textContent = '';
+            document.getElementById('resultBody').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
