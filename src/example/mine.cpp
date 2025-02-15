@@ -1,19 +1,15 @@
-#include "circuit/circuit.h"
-#include "circuit/share.h"
 #include <vector>
 #include <string>
 #include <iostream>
-#include <stdlib.h>
-#include <time.h>
-#include<iomanip>
-#include<fstream>
-#include<sstream>
+#include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <cstdint>
-
-#include <cassert>
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include "circuit/circuit.h"
+#include "circuit/share.h"
 #include "../core/httplib.h"
 #include "../core/OEP.h"
 #include "../core/relation.h"
@@ -26,102 +22,44 @@ using namespace SECYAN;
 
 vector<vector<uint64_t>> jiaoji_result;
 
-vector<uint64_t> readAlicedata(int flag) {
-    ifstream ifs;  //创建流对象
-    ifs.open("Alicedata.txt", ios::in);
+vector<uint64_t> readDataFromFile(const string& filename, int flag) {
+    ifstream ifs;
+    ifs.open(filename, ios::in);
     vector<uint64_t> target = { 0 };
-    //判断文件是否打开
+    
     if (!ifs.is_open()) {
-        cout << "read Alicedata false" << endl;
+        cout << "read " << filename << " false" << endl;
         return target;
     }
-    vector<uint64_t> target_1,target_2;
-    vector<string> item;    //用于存放文件中的一行数据
-    string temp;   //把文件中的一行数据作为字符串放入容器中
-    while (getline(ifs, temp))   //利用getline（）读取每一行，并放入到 item 中
-    {
-        item.push_back(temp);
-    }
-    for (auto it = item.begin(); it != item.end(); it++)
-    {
-        cout << *it << endl;
-
-        istringstream istr(*it); //把一行数据分为单个数据
-        string str;
-        int count = 1;        //统计一行数据中单个数据个数
-
-        //获取文件中的第 1、2 列数据
-        while (istr >> str)                      //以空格为界，把istringstream中数据取出放入到依次s中
-        {
-            //获取第1列数据
-            if (count == 1)
-            {
-                int r = atoi(str.c_str());       //数据类型转换，将string类型转换成float,如果字符串不是有数字组成，则字符被转化为 0
-
-                target_1.push_back(r);
-            }
-            //获取第2列数据
-            else if (count == 2)
-            {
-                int r = atoi(str.c_str());       //数据类型转换，将string类型转换成float
-
-                target_2.push_back(r);
-            }
-            count++;
-        }
-    }
-    if (flag == 1)
-        return target_1;
-    else if (flag == 2) 
-        return target_2;
-    else
-        return target;
-}
-
-vector<uint64_t> readBobdata(int flag) {
-    ifstream ifs;  //创建流对象
-    ifs.open("Bobdata.txt", ios::in);
-    vector<uint64_t> target = { 0 };
-    //判断文件是否打开
-    if (!ifs.is_open()) {
-        cout << "read Bobdata false" << endl;
-        return target;
-    }
+    
     vector<uint64_t> target_1, target_2;
-    vector<string> item;    //用于存放文件中的一行数据
-    string temp;   //把文件中的一行数据作为字符串放入容器中
-    while (getline(ifs, temp))   //利用getline（）读取每一行，并放入到 item 中
-    {
+    vector<string> item;
+    string temp;
+    
+    while (getline(ifs, temp)) {
         item.push_back(temp);
     }
-    for (auto it = item.begin(); it != item.end(); it++)
-    {
+    
+    for (auto it = item.begin(); it != item.end(); it++) {
         cout << *it << endl;
-
-        istringstream istr(*it); //把一行数据分为单个数据
+        
+        istringstream istr(*it);
         string str;
-        int count = 1;        //统计一行数据中单个数据个数
-
-        //获取文件中的第 1、2 列数据
-        while (istr >> str)                      //以空格为界，把istringstream中数据取出放入到依次s中
-        {
-            //获取第1列数据
-            if (count == 1)
-            {
-                int r = atoi(str.c_str());       //数据类型转换，将string类型转换成float,如果字符串不是有数字组成，则字符被转化为 0
-
+        int count = 1;
+        
+        while (istr >> str) {
+            if (count == 1) {
+                int r = atoi(str.c_str());
                 target_1.push_back(r);
             }
-            //获取第2列数据
-            else if (count == 2)
-            {
-                int r = atoi(str.c_str());       //数据类型转换，将string类型转换成float
-
+            else if (count == 2) {
+                int r = atoi(str.c_str());
                 target_2.push_back(r);
             }
             count++;
         }
     }
+    
     if (flag == 1)
         return target_1;
     else if (flag == 2)
@@ -130,225 +68,148 @@ vector<uint64_t> readBobdata(int flag) {
         return target;
 }
 
-vector<uint64_t> paixu(vector<uint64_t> a,int len){
- 	for(int i=0;i<len-1;i++){
-  		for(int j=0;j<len-i-1;j++){
-   			if(a[j]>a[j+1]){
-    				uint64_t temp=a[j];
-    				a[j]=a[j+1];
-    				a[j+1]=temp;
-   			}			
-  		}
- 
- 	}
- 	return a;
+void sortWithIndex(std::vector<uint64_t>& data0, std::vector<uint64_t>& data1) {
+    // 创建一个包含索引的配对数组
+    std::vector<std::pair<uint64_t, uint64_t>> pairedData;
+    for (size_t i = 0; i < data0.size(); ++i) {
+        pairedData.emplace_back(data0[i], data1[i]);
+    }
+
+    // 使用 std::sort 和自定义比较函数进行排序
+    std::sort(pairedData.begin(), pairedData.end());
+
+    // 更新原始数组
+    for (size_t i = 0; i < pairedData.size(); ++i) {
+        data0[i] = pairedData[i].first;
+        data1[i] = pairedData[i].second;
+    }
 }
+
 //vector<vector<uint64_t>> test_one_psi()
 void test_one_psi()
 {
 	auto role = gParty.GetRole();
 	auto bc = gParty.GetCircuit(S_BOOL);
-	clock_t start, end;
- 	float duration;
+	clock_t start;
  	start = clock();
-	vector<uint64_t> Alicedata = readAlicedata(1);
-	vector<uint64_t> Bobdata = readBobdata(1);
-	auto alast = unique(Alicedata.begin(), Alicedata.end());
-   	Alicedata.erase(alast, Alicedata.end());  
-    	Alicedata.erase(Alicedata.begin());
-    	int M=Alicedata.size();
-    	auto blast = unique(Bobdata.begin(), Bobdata.end());
-    	Bobdata.erase(blast, Bobdata.end());  
-    	Bobdata.erase(Bobdata.begin());
-    	int N=Bobdata.size();
-    	vector<uint64_t> AliceSet(M);
-    	vector<uint64_t> BobSet(N);
-	for (int i = 0; i < M; i++)
-		AliceSet[i] = Alicedata[i];
-	for (int i = 0; i < N; i++)
-		BobSet[i] = Bobdata[i];
-	PSI *psi;
-	if (role == SERVER){
-	        cout<<"this is alice"<<endl;
-	        for(int i=0;i<M;i++){
-                        cout<<AliceSet[i]<<" ";
-                }
-                cout<<endl;
-		psi = new PSI(AliceSet, M, N, PSI::Alice);
-	}
-	else{
-	        for(int i=0;i<N;i++){
-                        cout<<BobSet[i]<<" ";
-                }
-                cout<<endl;
-		psi = new PSI(BobSet, M, N, PSI::Bob);
-	}
+
+	vector<uint64_t> Alicedata = readDataFromFile("Alicedata.txt", 1);
+	vector<uint64_t> Bobdata = readDataFromFile("Bobdata.txt", 1);
+	// todo 验证（ZK）
+	Alicedata.erase(unique(Alicedata.begin(), Alicedata.end()), Alicedata.end());
+	Alicedata.erase(Alicedata.begin());
+    Bobdata.erase(unique(Bobdata.begin(), Bobdata.end()), Bobdata.end());
+	Bobdata.erase(Bobdata.begin());
+    vector<uint64_t> AliceSet(Alicedata.begin(), Alicedata.end());
+	vector<uint64_t> BobSet(Bobdata.begin(), Bobdata.end());
+	
+	PSI *psi = (role == SERVER) ?
+		new PSI(AliceSet, Alicedata.size(), Bobdata.size(), PSI::Alice) :
+		new PSI(BobSet, Alicedata.size(), Bobdata.size(), PSI::Bob);
 	vector<uint32_t> out = psi->Intersect();
-	// auto out = psi->Intersect();
-	cout<<"out result"<<endl;
- 	for (int i = 0; i < (int)out.size(); i++){
-  		cout<<out[i]<<" ";
- 	}
- 	cout<<endl;
+
 	auto s_in = bc->PutSharedSIMDINGate(out.size(), out.data(), 1);
 	auto s_out = bc->PutOUTGate(s_in, ALL);
 	uint32_t *a;
 	uint32_t b, c;
 	gParty.ExecCircuit();
 	s_out->get_clear_value_vec(&a, &b, &c);
-	cout<<"real result"<<endl;
- 	for(int i=0;i<(int)out.size();i++){
-     		cout<<a[i]<<" "; 
- 	}
- 	cout<<endl;
 	
-	int num = 0;
-	for (int i = 0; i < (int)out.size(); i++)
-		num += a[i];
-	cout<<num<<endl;
-	vector<uint64_t> end_senddata0;
- 	vector<uint64_t> end_senddata1;
- 	vector<uint64_t> end_receivedata0;
- 	vector<uint64_t> end_receivedata1;
- 	int end_data_count=0;
- 	
- 	vector<vector<uint64_t>> jiaoji_result;
+	int num = accumulate(a, a + out.size(), 0);
  	
 	if(role == SERVER){
   		auto table=psi->Get_cuckooTable();
   		vector<uint64_t> intersectData(num);
   		int count=0;
-  		cout<<(int)table.size()<<endl;
   		for(int i=0;i<(int)table.size();i++){
    			if(a[i]==1){
     				intersectData[count]=table[i];
     				count++;
-    
    			}
   		}
-  		cout<<"intersection"<<endl;
-  		for(int i=0;i<num;i++){
-   			cout<<intersectData[i]<<" ";
- 		}
-  		cout<<endl; 
+
   		gParty.OTSend(intersectData, intersectData);
-  		vector<uint64_t> re_intersectData=paixu(intersectData,num);
+
+  		sort(intersectData.begin(), intersectData.begin() + num);
   
-  		vector<uint64_t> Alicedata0=readAlicedata(1);
+  		vector<uint64_t> Alicedata0=readDataFromFile("Alicedata.txt", 1);
   		Alicedata0.erase(Alicedata0.begin());
-  		vector<uint64_t> Alicedata1=readAlicedata(2);
+  		vector<uint64_t> Alicedata1=readDataFromFile("Alicedata.txt", 2);
   		Alicedata1.erase(Alicedata1.begin());
-  
-  		for(int i=0;i<Alicedata0.size()-1;i++){
-   			for(int j=0;j<Alicedata0.size()-i-1;j++){
-    				if(Alicedata0[j]>Alicedata0[j+1]){
-     					uint64_t temp=Alicedata0[j];
-     					Alicedata0[j]=Alicedata0[j+1];
-     					Alicedata0[j+1]=temp;
-     
-     					temp=Alicedata1[j];
-     					Alicedata1[j]=Alicedata1[j+1];
-     					Alicedata1[j+1]=temp;
-    				}
-   			} 
- 
-		}
-		int q=0;
-  		int k=0;
-  
+		sortWithIndex(Alicedata0, Alicedata1);
+
+   		vector<uint64_t> end_receivedata0;
+ 		vector<uint64_t> end_receivedata1;
   		gParty.Recv(end_receivedata0);
   		gParty.Recv(end_receivedata1);
-      		int abc_count=0;
+
+      	int abc_count=0;
+		int k = 0;
+		for (size_t i = 0; i < Alicedata0.size(); ++i) {
+    		// 在 end_receivedata0 中查找 Alicedata0[i]
+    		auto it = std::find(end_receivedata0.begin() + k, end_receivedata0.end(), Alicedata0[i]);
+    		if (it != end_receivedata0.end()) {
+        		size_t index = std::distance(end_receivedata0.begin(), it);
+        		// 将匹配的元素及其对应的值添加到 jiaoji_result 中
+        		jiaoji_result.push_back({Alicedata0[i], Alicedata1[i], end_receivedata1[index]});
+        		abc_count++;
+				k = index + 1;
+    		}
+		}
       
-      		cout<<"A\t\tB\t\tC\t\t"<<endl;
-      		for(int i=0;i<Alicedata0.size();i++){
-       			for(int j=0;j<end_receivedata0.size();j++){
-       	 			if(Alicedata0[i]==end_receivedata0[j]){
-         				vector<uint64_t> row;
-         				row.push_back(Alicedata0[i]);
-     					row.push_back(Alicedata1[i]);
-     					row.push_back(end_receivedata1[j]);
-     					jiaoji_result.push_back(row);
-         				abc_count++;
-        			}
-        			if(Alicedata0[i]<end_receivedata0[j]){
-         				break;
-        			}
-       			}	
-      
-      		}
-      
-      		cout<<"Alice_intersect_table"<<endl;
-      		cout<<"A\tB\tC\t"<<endl;
-      		for (const auto& row : jiaoji_result) {
-          		for (int value : row) {
-              			std::cout << value << '\t';
-          		}
-          		std::cout << '\n';
-      		}
-      		cout<<"total:   "<<abc_count<<endl;
-      		cout << "The intersection is successfully solved!" << endl;
+      	cout<<"Alice_intersect_table"<<endl;
+      	cout<<"A\tB\tC\t"<<endl;
+      	for (const auto& row : jiaoji_result) {
+          	for (int value : row) {
+              	std::cout << value << '\t';
+          	}
+          	std::cout << '\n';
+      	}
+      	cout<<"total:   "<<abc_count<<endl;
+      	cout << "The intersection is successfully solved!" << endl;
 	}
 	if(role==CLIENT){
   		vector<uint32_t> selectBits(num, 1);
   		vector<uint64_t> receivedData = gParty.OTRecv(selectBits);
-  		vector<uint64_t> re_receivedData=paixu(receivedData,num);
-  		vector<uint64_t> Bobdata0=readBobdata(1);
+  		
+		sort(receivedData.begin(), receivedData.begin() + num);
+  		
+		vector<uint64_t> Bobdata0=readDataFromFile("Bobdata.txt", 1);
   		Bobdata0.erase(Bobdata0.begin());
-  		vector<uint64_t> Bobdata1=readBobdata(2);
+  		vector<uint64_t> Bobdata1=readDataFromFile("Bobdata.txt", 2);
   		Bobdata1.erase(Bobdata1.begin());
   
-  		for(int i=0;i<Bobdata0.size()-1;i++){
-   			for(int j=0;j<Bobdata0.size()-i-1;j++){
-    				if(Bobdata0[j]>Bobdata0[j+1]){
-     					uint64_t temp=Bobdata0[j];
-     					Bobdata0[j]=Bobdata0[j+1];
-     					Bobdata0[j+1]=temp;
-     
-     					temp=Bobdata1[j];
-     					Bobdata1[j]=Bobdata1[j+1];
-     					Bobdata1[j+1]=temp;
-    				}			
-   			} 
- 
-  		}
-  		int q=0;
-  		int k=0;
-  
-  		cout<<"Bob_intersect_table"<<endl;
-  		while(q<num&&k<Bobdata0.size()){
-   			if(Bobdata0[k]<re_receivedData[q]){
-    				k++;
-   
-   			}
-   			else if(Bobdata0[k]==re_receivedData[q]){
-    
-    				cout<<Bobdata0[k]<<"\t\t"<<Bobdata1[k]<<endl;
-    				end_senddata0.push_back(Bobdata0[k]);
-    				end_senddata1.push_back(Bobdata1[k]);
-    				k++;
-    				end_data_count++;
-   
-   			}
-   			else{
-    				q++;    
-   			}   
-  		}
+		vector<uint64_t> end_senddata0, end_senddata1;
+        int end_data_count = 0;
 		
+		sortWithIndex(Bobdata0, Bobdata1);
+
+		// 从Bobdata0中找到与receivedData中相同的元素，并将其索引对应的Bobdata0和Bobdata1加入end_senddata0和end_senddata1
+		int k = 0;
+		for (const auto& value : receivedData) {
+    		auto it = std::find(Bobdata0.begin() + k, Bobdata0.end(), value);
+    		if (it != Bobdata0.end()) {
+        		size_t index = std::distance(Bobdata0.begin(), it);
+        		end_senddata0.push_back(Bobdata0[index]);
+        		end_senddata1.push_back(Bobdata1[index]);
+        		end_data_count++;
+        		k = index + 1; 
+    		}
+		}
+		// todo 加噪声（差分隐私）
 		gParty.Send(end_senddata0);
   		gParty.Send(end_senddata1);
   		cout<<"Bob transmitted the data to Alice successfully"<<endl;
  	}
- 	end=clock();
- 	duration = 1000.0 * (end - start) / CLOCKS_PER_SEC;
- 	cout << "intersection: " << duration << " ms" << endl;
- 	gParty.Reset();
- 
+ 	
+	float duration = 1000.0 * (clock() - start) / CLOCKS_PER_SEC;
+    cout << "intersection: " << duration << " ms" << endl;
+    gParty.Reset();
  
  	delete[] a;
  	delete psi;
- 	//return jiaoji_result;
 }
+
 void writeRandomDataToFile(const std::string& filename,int seed,int m,int flag) {
     std::ofstream outputFile(filename);
 
