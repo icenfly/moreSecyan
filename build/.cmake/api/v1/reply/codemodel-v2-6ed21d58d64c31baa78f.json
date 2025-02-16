@@ -76,7 +76,7 @@
 				{
 					"build" : "extern/ABY/extern/ENCRYPTO_utils/extern/relic/src",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-extern.ABY.extern.ENCRYPTO_utils.extern.relic.src-Debug-83771971ee0d2a84e33b.json",
+					"jsonFile" : "directory-extern.ABY.extern.ENCRYPTO_utils.extern.relic.src-Debug-ca27f00095772246879c.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.1"
@@ -87,7 +87,7 @@
 					"targetIndexes" : 
 					[
 						1,
-						11
+						13
 					]
 				},
 				{
@@ -109,7 +109,7 @@
 				{
 					"build" : "extern/ABY/extern/OTExtension",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-extern.ABY.extern.OTExtension-Debug-7ae81363ad722d172620.json",
+					"jsonFile" : "directory-extern.ABY.extern.OTExtension-Debug-8f86e37fb051138b4fe1.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.12"
@@ -119,7 +119,7 @@
 					"source" : "extern/ABY/extern/OTExtension",
 					"targetIndexes" : 
 					[
-						10
+						11
 					]
 				},
 				{
@@ -203,7 +203,7 @@
 					"source" : "extern/libOTe/cryptoTools/tests_cryptoTools",
 					"targetIndexes" : 
 					[
-						14
+						16
 					]
 				},
 				{
@@ -279,7 +279,7 @@
 					"source" : "src/core",
 					"targetIndexes" : 
 					[
-						12
+						14
 					]
 				},
 				{
@@ -296,7 +296,9 @@
 					[
 						2,
 						9,
-						13
+						10,
+						12,
+						15
 					]
 				}
 			],
@@ -320,8 +322,10 @@
 					[
 						2,
 						9,
+						10,
 						12,
-						13
+						14,
+						15
 					]
 				},
 				{
@@ -370,7 +374,7 @@
 					"targetIndexes" : 
 					[
 						1,
-						11
+						13
 					]
 				},
 				{
@@ -382,7 +386,7 @@
 					"parentIndex" : 1,
 					"targetIndexes" : 
 					[
-						10
+						11
 					]
 				},
 				{
@@ -420,7 +424,7 @@
 					[
 						3,
 						5,
-						14
+						16
 					]
 				}
 			],
@@ -443,7 +447,7 @@
 				{
 					"directoryIndex" : 17,
 					"id" : "benchmark::@6325e01fdd28660a86f8",
-					"jsonFile" : "target-benchmark-Debug-dd5d331c9ff67cdcc1ee.json",
+					"jsonFile" : "target-benchmark-Debug-e917b6f5321e9004b421.json",
 					"name" : "benchmark",
 					"projectIndex" : 0
 				},
@@ -492,8 +496,15 @@
 				{
 					"directoryIndex" : 17,
 					"id" : "main::@6325e01fdd28660a86f8",
-					"jsonFile" : "target-main-Debug-1a66a96e5caaa3d9baa8.json",
+					"jsonFile" : "target-main-Debug-9fe9516f91da853cd379.json",
 					"name" : "main",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 17,
+					"id" : "newpsi2::@6325e01fdd28660a86f8",
+					"jsonFile" : "target-newpsi2-Debug-56980694c3c08e22b33c.json",
+					"name" : "newpsi2",
 					"projectIndex" : 0
 				},
 				{
@@ -502,6 +513,13 @@
 					"jsonFile" : "target-otextension-Debug-c14d19ef1d04b55a35d3.json",
 					"name" : "otextension",
 					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 17,
+					"id" : "psi::@6325e01fdd28660a86f8",
+					"jsonFile" : "target-psi-Debug-f24e62b137d1967ac070.json",
+					"name" : "psi",
+					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
@@ -520,7 +538,7 @@
 				{
 					"directoryIndex" : 17,
 					"id" : "secyandemo::@6325e01fdd28660a86f8",
-					"jsonFile" : "target-secyandemo-Debug-cbfbf8d83290c5e44c82.json",
+					"jsonFile" : "target-secyandemo-Debug-d0c17a441d4771afa4ef.json",
 					"name" : "secyandemo",
 					"projectIndex" : 0
 				},

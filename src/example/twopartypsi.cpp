@@ -2,10 +2,15 @@
 #include <vector>
 #include <algorithm>
 #include <cstdint>
-#include "core/party.h"
-#include "core/PSI.h"
-#include "core/relation.h"
 #include "TPCH.h"
+#include "circuit/circuit.h"
+#include "circuit/share.h"
+#include "../core/httplib.h"
+#include "../core/OEP.h"
+#include "../core/relation.h"
+#include "../core/PSI.h"
+#include "../core/party.h"
+#include "../core/RNG.h"
 
 using namespace std;
 
@@ -87,7 +92,7 @@ Relation fileLoadclient(string filename, vector<uint64_t>& keys, uint32_t& size)
     auto filePath = GetFilePath(ORDERS, _1MB);
 	relation.LoadData(filePath.c_str(), "q3_annot");
     
-    keys = relation.Project(AttrNames[ORDERS][Q3][0]);
+    keys = relation.Project(AttrNames[ORDERS][Q3]);
     sort(keys.begin(), keys.end());
     keys.erase(unique(keys.begin(), keys.end()), keys.end());
     size = keys.size();
@@ -95,19 +100,19 @@ Relation fileLoadclient(string filename, vector<uint64_t>& keys, uint32_t& size)
 }
 
 // 服务端逻辑，与 mine.cpp 中的服务端部分对应
-void serverLogic(Party& gParty, vector<uint32_t>& realout, Relation& aliceRelation) {
+void serverLogic(Party& gParty, uint32_t *realout, Relation& aliceRelation) {
     for(int i=0;i<(int)realout.size();i++){
         if(realout[i]==1){
-            cout << aliceRelation.Project(AttrNames[CUSTOMER][Q3][0])[i] << endl;
+            cout << 1 << endl;
         }
     }
 }
 
 // 客户端逻辑，与 mine.cpp 中的客户端部分对应
-void clientLogic(Party& gParty, vector<uint32_t>& realout, Relation& bobRelation) {
+void clientLogic(Party& gParty, uint32_t *realout, Relation& bobRelation) {
     for(int i=0;i<(int)realout.size();i++){
         if(realout[i]==1){
-            cout << bobRelation.Project(AttrNames[ORDERS][Q3][0])[i] << endl;
+            cout << 1 << endl;
         }
     }
 }
@@ -137,28 +142,31 @@ void initializeParty(Party& gParty, int argc, char* argv[]) {
         exit(1);
     }
 
-    Relation aliceRelation;
-    Relation bobRelation;
     vector<uint64_t> aliceKeys;
     vector<uint64_t> bobKeys;
     uint32_t aliceSize;
     uint32_t bobSize;
     auto bc = gParty.GetCircuit(S_BOOL);
 
+    vector<uint32_t> out;
+
     if(role == "SERVER"){
-        aliceRelation = fileLoadserver(filename, aliceKeys, aliceSize);
-        gParty.Send(aliceSize);
-        gParty.Recv(bobSize);
-        PSI psi(aliceKeys, aliceSize, bobSize, PSI::Alice);
+        vector<uint32_t> as = {aliceSize};
+        vector<uint32_t> bs;
+        gParty.Send(as);
+        gParty.Recv(bs);
+        PSI psi(aliceKeys, aliceSize, bs[0], PSI::Alice);     
+        out = psi.Intersect();
     }
     else{
-        bobRelation = fileLoadclient(filename, bobKeys, bobSize);
-        gParty.Recv(aliceSize);
-        gParty.Send(bobSize);
-        PSI psi(bobKeys, aliceSize, bobSize, PSI::Bob);
+        vector<uint32_t> as;
+        vector<uint32_t> bs = {bobSize};
+        gParty.Recv(as);
+        gParty.Send(bs);
+        PSI psi(bobKeys, as[0], bobSize, PSI::Bob);
+        out = psi.Intersect();
     }
 
-    vector<uint32_t> out = psi.Intersect();
 	auto s_in = bc->PutSharedSIMDINGate(out.size(), out.data(), 1);
 	auto s_out = bc->PutOUTGate(s_in, ALL);
 	uint32_t *realout;
@@ -167,8 +175,10 @@ void initializeParty(Party& gParty, int argc, char* argv[]) {
 	s_out->get_clear_value_vec(&realout, &b, &c);
 
     if (role == "SERVER") {
+        Relation aliceRelation = fileLoadserver(filename, aliceKeys, aliceSize);
         serverLogic(gParty, realout, aliceRelation);
     } else {
+        Relation bobRelation = fileLoadclient(filename, bobKeys, bobSize);
         clientLogic(gParty, realout, bobRelation);
     }
 }

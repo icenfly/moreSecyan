@@ -356,6 +356,32 @@ main/fast:
 	$(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/main.dir/build.make src/example/CMakeFiles/main.dir/build
 .PHONY : main/fast
 
+#=============================================================================
+# Target rules for targets named psi
+
+# Build rule for target.
+psi: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 psi
+.PHONY : psi
+
+# fast build rule for target.
+psi/fast:
+	$(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/psi.dir/build.make src/example/CMakeFiles/psi.dir/build
+.PHONY : psi/fast
+
+#=============================================================================
+# Target rules for targets named newpsi2
+
+# Build rule for target.
+newpsi2: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 newpsi2
+.PHONY : newpsi2
+
+# fast build rule for target.
+newpsi2/fast:
+	$(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/newpsi2.dir/build.make src/example/CMakeFiles/newpsi2.dir/build
+.PHONY : newpsi2/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -378,7 +404,9 @@ help:
 	@echo "... libOTe"
 	@echo "... libOTe_Tests"
 	@echo "... main"
+	@echo "... newpsi2"
 	@echo "... otextension"
+	@echo "... psi"
 	@echo "... relic_s"
 	@echo "... secyan"
 	@echo "... secyandemo"

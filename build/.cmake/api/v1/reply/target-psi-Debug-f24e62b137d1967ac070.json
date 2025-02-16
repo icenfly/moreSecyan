@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "src/example/secyandemo"
+			"path" : "src/example/psi"
 		}
 	],
 	"backtrace" : 1,
@@ -39,13 +39,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 6,
+				"line" : 15,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 20,
+				"line" : 34,
 				"parent" : 0
 			},
 			{
@@ -270,8 +270,7 @@
 			"language" : "CXX",
 			"sourceIndexes" : 
 			[
-				0,
-				1
+				0
 			]
 		}
 	],
@@ -306,7 +305,7 @@
 			"id" : "secyan::@0618756b1ff51bca1a0e"
 		}
 	],
-	"id" : "secyandemo::@6325e01fdd28660a86f8",
+	"id" : "psi::@6325e01fdd28660a86f8",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -422,8 +421,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "secyandemo",
-	"nameOnDisk" : "secyandemo",
+	"name" : "psi",
+	"nameOnDisk" : "psi",
 	"paths" : 
 	{
 		"build" : "src/example",
@@ -435,8 +434,7 @@
 			"name" : "Source Files",
 			"sourceIndexes" : 
 			[
-				0,
-				1
+				0
 			]
 		}
 	],
@@ -445,13 +443,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/example/TPCH.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "src/example/secyandemo.cpp",
+			"path" : "src/example/mine.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

@@ -115,6 +115,8 @@
 /home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/benchmark.dir
 /home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/secyandemo.dir
 /home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/main.dir
+/home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/psi.dir
+/home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/newpsi2.dir
 /home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/edit_cache.dir
 /home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/rebuild_cache.dir
 /home/ic/Desktop/SECYAN3/build/src/example/CMakeFiles/list_install_components.dir

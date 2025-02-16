@@ -203,6 +203,34 @@ main/fast:
 	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/main.dir/build.make src/example/CMakeFiles/main.dir/build
 .PHONY : main/fast
 
+# Convenience name for target.
+src/example/CMakeFiles/psi.dir/rule:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/example/CMakeFiles/psi.dir/rule
+.PHONY : src/example/CMakeFiles/psi.dir/rule
+
+# Convenience name for target.
+psi: src/example/CMakeFiles/psi.dir/rule
+.PHONY : psi
+
+# fast build rule for target.
+psi/fast:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/psi.dir/build.make src/example/CMakeFiles/psi.dir/build
+.PHONY : psi/fast
+
+# Convenience name for target.
+src/example/CMakeFiles/newpsi2.dir/rule:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/example/CMakeFiles/newpsi2.dir/rule
+.PHONY : src/example/CMakeFiles/newpsi2.dir/rule
+
+# Convenience name for target.
+newpsi2: src/example/CMakeFiles/newpsi2.dir/rule
+.PHONY : newpsi2
+
+# fast build rule for target.
+newpsi2/fast:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/newpsi2.dir/build.make src/example/CMakeFiles/newpsi2.dir/build
+.PHONY : newpsi2/fast
+
 TPCH.o: TPCH.cpp.o
 .PHONY : TPCH.o
 
@@ -278,6 +306,30 @@ main.cpp.s:
 	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/main.dir/build.make src/example/CMakeFiles/main.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+mine.o: mine.cpp.o
+.PHONY : mine.o
+
+# target to build an object file
+mine.cpp.o:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/psi.dir/build.make src/example/CMakeFiles/psi.dir/mine.cpp.o
+.PHONY : mine.cpp.o
+
+mine.i: mine.cpp.i
+.PHONY : mine.i
+
+# target to preprocess a source file
+mine.cpp.i:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/psi.dir/build.make src/example/CMakeFiles/psi.dir/mine.cpp.i
+.PHONY : mine.cpp.i
+
+mine.s: mine.cpp.s
+.PHONY : mine.s
+
+# target to generate assembly for a file
+mine.cpp.s:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/psi.dir/build.make src/example/CMakeFiles/psi.dir/mine.cpp.s
+.PHONY : mine.cpp.s
+
 secyandemo.o: secyandemo.cpp.o
 .PHONY : secyandemo.o
 
@@ -302,6 +354,30 @@ secyandemo.cpp.s:
 	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/secyandemo.dir/build.make src/example/CMakeFiles/secyandemo.dir/secyandemo.cpp.s
 .PHONY : secyandemo.cpp.s
 
+twopartypsi.o: twopartypsi.cpp.o
+.PHONY : twopartypsi.o
+
+# target to build an object file
+twopartypsi.cpp.o:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/newpsi2.dir/build.make src/example/CMakeFiles/newpsi2.dir/twopartypsi.cpp.o
+.PHONY : twopartypsi.cpp.o
+
+twopartypsi.i: twopartypsi.cpp.i
+.PHONY : twopartypsi.i
+
+# target to preprocess a source file
+twopartypsi.cpp.i:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/newpsi2.dir/build.make src/example/CMakeFiles/newpsi2.dir/twopartypsi.cpp.i
+.PHONY : twopartypsi.cpp.i
+
+twopartypsi.s: twopartypsi.cpp.s
+.PHONY : twopartypsi.s
+
+# target to generate assembly for a file
+twopartypsi.cpp.s:
+	cd /home/ic/Desktop/SECYAN3/build && $(MAKE) $(MAKESILENT) -f src/example/CMakeFiles/newpsi2.dir/build.make src/example/CMakeFiles/newpsi2.dir/twopartypsi.cpp.s
+.PHONY : twopartypsi.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -316,6 +392,8 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... benchmark"
 	@echo "... main"
+	@echo "... newpsi2"
+	@echo "... psi"
 	@echo "... secyandemo"
 	@echo "... TPCH.o"
 	@echo "... TPCH.i"
@@ -326,9 +404,15 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... mine.o"
+	@echo "... mine.i"
+	@echo "... mine.s"
 	@echo "... secyandemo.o"
 	@echo "... secyandemo.i"
 	@echo "... secyandemo.s"
+	@echo "... twopartypsi.o"
+	@echo "... twopartypsi.i"
+	@echo "... twopartypsi.s"
 .PHONY : help
 
 

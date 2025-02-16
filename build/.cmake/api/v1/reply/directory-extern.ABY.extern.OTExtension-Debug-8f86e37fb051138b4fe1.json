@@ -51,7 +51,7 @@
 				"extern/ABY/lib/libotextension.a"
 			],
 			"targetId" : "otextension::@8d9ac117c87ed4fa8f9d",
-			"targetIndex" : 10,
+			"targetIndex" : 11,
 			"type" : "target"
 		},
 		{
@@ -73,7 +73,7 @@
 			[
 				{
 					"id" : "otextension::@8d9ac117c87ed4fa8f9d",
-					"index" : 10
+					"index" : 11
 				}
 			],
 			"paths" : 
