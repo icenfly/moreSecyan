@@ -77,11 +77,7 @@ Relation fileLoadserver(string filename, vector<uint64_t>& keys, uint32_t& size)
     auto filePath = GetFilePath(CUSTOMER, _1MB);
 	relation.LoadData(filePath.c_str(), "q3_annot");
     
-    keys = relation.Project(AttrNames[CUSTOMER][Q3][0]);
-    sort(keys.begin(), keys.end());
-    keys.erase(unique(keys.begin(), keys.end()), keys.end());
-    size = keys.size();
-    return relation;
+
 }
 
 Relation fileLoadclient(string filename, vector<uint64_t>& keys, uint32_t& size) {
@@ -92,29 +88,17 @@ Relation fileLoadclient(string filename, vector<uint64_t>& keys, uint32_t& size)
     auto filePath = GetFilePath(ORDERS, _1MB);
 	relation.LoadData(filePath.c_str(), "q3_annot");
     
-    keys = relation.Project(AttrNames[ORDERS][Q3]);
-    sort(keys.begin(), keys.end());
-    keys.erase(unique(keys.begin(), keys.end()), keys.end());
-    size = keys.size();
-    return relation;
+
 }
 
 // 服务端逻辑，与 mine.cpp 中的服务端部分对应
 void serverLogic(Party& gParty, uint32_t *realout, Relation& aliceRelation) {
-    for(int i=0;i<(int)realout.size();i++){
-        if(realout[i]==1){
-            cout << 1 << endl;
-        }
-    }
+
 }
 
 // 客户端逻辑，与 mine.cpp 中的客户端部分对应
 void clientLogic(Party& gParty, uint32_t *realout, Relation& bobRelation) {
-    for(int i=0;i<(int)realout.size();i++){
-        if(realout[i]==1){
-            cout << 1 << endl;
-        }
-    }
+
 }
 
 // 初始化函数，与 mine.cpp 中的初始化部分对应
