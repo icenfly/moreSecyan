@@ -12,6 +12,14 @@ add_executable(main
     main.cpp
 )
 
+add_executable(psi
+    mine.cpp
+)
+
+add_executable(newpsi2
+    twopartypsi.cpp
+)
+
 target_link_libraries(benchmark 
     PUBLIC secyan
     PUBLIC ENCRYPTO_utils::encrypto_utils
@@ -21,4 +29,10 @@ target_link_libraries(secyandemo
     PUBLIC secyan)
     
 target_link_libraries(main 
+    PUBLIC secyan)
+    
+target_link_libraries(psi 
+    PUBLIC secyan)
+
+target_link_libraries(newpsi2 
     PUBLIC secyan)
