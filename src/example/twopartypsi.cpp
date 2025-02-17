@@ -1,4 +1,9 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <set>
+#include <stdexcept> // 引入 std::invalid_argument 和 std::out_of_range 异常处理
 #include <vector>
 #include <algorithm>
 #include <cstdint>
@@ -91,14 +96,255 @@ Relation fileLoadclient(string filename, vector<uint64_t>& keys, uint32_t& size)
 
 }
 
-// 服务端逻辑，与 mine.cpp 中的服务端部分对应
-void serverLogic(Party& gParty, uint32_t *realout, Relation& aliceRelation) {
+vector<vector<uint64_t>> jiaoji_result;
 
+void sortWithIndex(std::vector<uint64_t>& data0, std::vector<uint64_t>& data1) {
+    // 创建一个包含索引的配对数组
+    std::vector<std::pair<uint64_t, uint64_t>> pairedData;
+    for (size_t i = 0; i < data0.size(); ++i) {
+        pairedData.emplace_back(data0[i], data1[i]);
+    }
+
+    // 使用 std::sort 和自定义比较函数进行排序
+    std::sort(pairedData.begin(), pairedData.end());
+
+    // 更新原始数组
+    for (size_t i = 0; i < pairedData.size(); ++i) {
+        data0[i] = pairedData[i].first;
+        data1[i] = pairedData[i].second;
+    }
 }
 
-// 客户端逻辑，与 mine.cpp 中的客户端部分对应
-void clientLogic(Party& gParty, uint32_t *realout, Relation& bobRelation) {
+void readData(string filename, vector<string>& columnNames, vector<vector<string>>& data) {
+    int columnNum;
 
+    ifstream inputFile(filename); // 打开文件
+
+    if (!inputFile.is_open()) {
+        cerr << "无法打开文件: " << filename << endl;
+        return; // 如果文件打开失败，则返回
+    }
+
+    string line;
+
+    // 读取 columnNum
+    getline(inputFile, line);
+    try {
+        columnNum = stoi(line); // 将读取的字符串转换为整数
+    } catch (const invalid_argument& e) {
+        cerr << "Error: 第一行不是有效的数字: " << line << endl;
+        inputFile.close();
+        return;
+    }
+
+    // 读取 columnNames
+    getline(inputFile, line);
+    stringstream ss_columnNames(line); // 使用stringstream来分割字符串
+    string columnName;
+    while (getline(ss_columnNames, columnName, '|')) {
+        columnNames.push_back(columnName);
+    }
+
+    // 读取 data
+    while (getline(inputFile, line)) {
+        stringstream ss_data(line); // 同样使用stringstream来分割每一行数据
+        string cell;
+        vector<string> rowData;
+        while (getline(ss_data, cell, '|')) {
+            rowData.push_back(cell);
+        }
+        data.push_back(rowData);
+    }
+
+    inputFile.close(); // 关闭文件
+}
+
+void readSetFromData(vector<vector<string>> data, vector<string> colNames, string specColumn, vector<uint64_t>& set) {
+    int columnIndex = -1; // 初始化列索引为 -1，表示未找到
+
+    // 1. 查找 specColumn 在 colNames 中的索引
+    for (int i = 0; i < colNames.size(); ++i) {
+        if (colNames[i] == specColumn) {
+            columnIndex = i; // 找到列名，记录索引
+            break; // 找到即可跳出循环
+        }
+    }
+
+    // 检查是否找到指定的列名
+    if (columnIndex == -1) {
+        cerr << "Error: 指定的列名 '" << specColumn << "' 未在列名列表中找到." << endl;
+        return set; // 如果未找到，返回空的 vector
+    }
+
+    std::set<uint64_t> uniqueSet; // 使用 set 自动去重和排序
+
+    // 2. 遍历 data，提取指定列的数据并转换为 uint64_t
+    for (const auto& row : data) {
+        // 确保当前行有足够的列数，防止越界访问
+        if (columnIndex < row.size()) {
+            string cellValueStr = row[columnIndex];
+            try {
+                // 将字符串转换为 uint64_t
+                uint64_t cellValue = stoull(cellValueStr);
+                uniqueSet.insert(cellValue); // 插入 set，自动去重和排序
+            } catch (const invalid_argument& e) {
+                cerr << "Warning: 无法将值 '" << cellValueStr << "' 转换为 uint64_t (无效参数). 行数据将被忽略." << endl;
+                continue; // 忽略当前行数据，继续下一行
+            } catch (const out_of_range& e) {
+                cerr << "Warning: 值 '" << cellValueStr << "' 超出 uint64_t 的范围. 行数据将被忽略." << endl;
+                continue; // 忽略当前行数据，继续下一行
+            }
+        } else {
+            cerr << "Warning: 数据行长度小于列索引，可能数据不完整. 行数据将被忽略." << endl;
+        }
+    }
+
+    // 3. 将 set 转换为 vector
+    set.assign(uniqueSet.begin(), uniqueSet.end());
+}
+
+void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
+{
+	auto role = gParty.GetRole();
+	auto bc = gParty.GetCircuit(S_BOOL);
+	clock_t start;
+ 	start = clock();
+
+    vector<string> AlicecolNames;
+    vector<string> BobcolNames;
+    vector<vector<string>> AliceData;
+    vector<vector<string>> BobData;
+    readData(GetFilePath(rn, ds), AlicecolNames, AliceData);
+    readData(GetFilePath(rn, ds), BobcolNames, BobData);
+
+    vector<uint64_t> AliceSet;
+	vector<uint64_t> BobSet;
+    readSetFromData(AliceData, AlicecolNames, querykey, AliceSet);
+    readSetFromData(BobData, BobcolNames, querykey, BobSet);
+
+	PSI *psi = (role == SERVER) ?
+		new PSI(AliceSet, Alicedata.size(), Bobdata.size(), PSI::Alice) :
+		new PSI(BobSet, Alicedata.size(), Bobdata.size(), PSI::Bob);
+	vector<uint32_t> out = psi->Intersect();
+
+	auto s_in = bc->PutSharedSIMDINGate(out.size(), out.data(), 1);
+	auto s_out = bc->PutOUTGate(s_in, ALL);
+	uint32_t *a;
+	uint32_t b, c;
+	gParty.ExecCircuit();
+	s_out->get_clear_value_vec(&a, &b, &c);
+	
+	int num = accumulate(a, a + out.size(), 0);
+ 	
+	if(role == SERVER){
+  		auto table=psi->Get_cuckooTable();
+  		vector<uint64_t> intersectData(num);
+  		int count=0;
+  		for(int i=0;i<(int)table.size();i++){
+   			if(a[i]==1){
+    				intersectData[count]=table[i];
+    				count++;
+   			}
+  		}
+
+  		gParty.OTSend(intersectData, intersectData);
+
+        vector<vector<uint64_t>> AliceIntersectData;
+        int columnIndex = -1; // 初始化列索引为 -1，表示未找到
+
+        // 1. 查找 querykey 在 AlicecolNames 中的位置 columnIndex
+        for (int i = 0; i < AlicecolNames.size(); ++i) {
+            if (AlicecolNames[i] == querykey) {
+                columnIndex = i; // 找到列名，记录索引
+                break; // 找到即可跳出循环
+            }
+        }
+
+        // 2. 根据 columnIndex 从 BobData 中提取数据
+        for(int i = 0; i < AliceData.size(); i++){
+            if(find(intersectData.begin(), intersectData.end(), AliceData[i][columnIndex]) != intersectData.end()){
+                AliceIntersectData.push_back(AliceData[i]);
+            }
+        }
+
+   		vector<uint64_t> end_receivedata0;
+ 		vector<uint64_t> end_receivedata1;
+        vector<vector<uint64_t>> BobIntersectData;
+  		gParty.Recv(end_receivedata0);
+        for(int i = 0; i < end_receivedata0[0]; i++){
+            gParty.Recv(end_receivedata1);
+            BobIntersectData.push_back(end_receivedata1);
+        }
+
+        int intersectCount = 0;
+        vector<vector<string>> intersectResult;
+
+
+      	cout<<"Intersect Result"<<endl;
+        for(auto col : AlicecolNames){
+            cout<<col<<" ";
+        }
+        for(auto col : BobcolNames){
+            cout<<col<<" ";
+        }
+        cout<<endl;
+        for(int i = 0; i < end_receivedata0[0]; i++){
+            for(auto col : AliceIntersectData[i]){
+                cout<<col<<" ";
+            }
+            for(auto col : BobIntersectData[i]){
+                cout<<col<<" ";
+            }
+            cout<<endl;
+        }
+      	cout<<"total:   "<<intersectCount<<endl;
+        for(int i = 0; i < intersectCount; i++){
+      	cout << "The intersection is successfully solved!" << endl;
+	    }
+    }
+	if(role==CLIENT){
+  		vector<uint32_t> selectBits(num, 1);
+  		vector<uint64_t> receivedData = gParty.OTRecv(selectBits);
+  		
+		sort(receivedData.begin(), receivedData.begin() + num);
+  
+		vector<uint64_t> end_senddata0;
+        vector<vector<uint64_t>> end_senddata1;
+        int end_data_count = 0;
+	
+        int columnIndex = -1; // 初始化列索引为 -1，表示未找到
+
+        // 1. 查找 querykey 在 BobcolNames 中的位置 columnIndex
+        for (int i = 0; i < BobcolNames.size(); ++i) {
+            if (BobcolNames[i] == querykey) {
+                columnIndex = i; // 找到列名，记录索引
+                break; // 找到即可跳出循环
+            }
+        }
+
+        // 2. 根据 columnIndex 从 BobData 中提取数据
+        for(int i = 0; i < BobData.size(); i++){
+            if(find(receivedData.begin(), receivedData.end(), BobData[i][columnIndex]) != receivedData.end()){
+                end_senddata1.push_back(BobData[i]);
+                end_data_count ++;
+            }
+        }
+
+		// todo 加噪声（差分隐私）
+        end_senddata0.push_back(end_data_count);
+		gParty.Send(end_senddata0);
+        for(int i = 0; i < end_data_count; i++){
+            gParty.Send(end_senddata1[i]);
+        }
+  		cout<<"Bob transmitted the data to Alice successfully"<<endl;
+ 	}
+ 	
+	float duration = 1000.0 * (clock() - start) / CLOCKS_PER_SEC;
+    cout << "intersection: " << duration << " ms" << endl;
+    gParty.Reset();
+ 
+ 	delete[] a;
+ 	delete psi;
 }
 
 // 初始化函数，与 mine.cpp 中的初始化部分对应
@@ -121,50 +367,40 @@ void initializeParty(Party& gParty, int argc, char* argv[]) {
     }
 
     string filename = argv[2];
-    if (find(begin(filenames), end(filenames), filename) == end(filenames)) {
-        cerr << "Invalid data file. Use one of: customer.tbl, orders.tbl, lineitem.tbl, part.tbl, supplier.tbl, partsupp.tbl." << endl;
+    // input with CUSTOMER, ORDERS, LINEITEM, PART, SUPPLIER, PARTSUPP, and check them with enum RelationName
+    if (filename != "CUSTOMER" && filename != "ORDERS" && filename != "LINEITEM" && filename != "PART" && filename != "SUPPLIER" && filename != "PARTSUPP") {
+        cerr << "Invalid data file. Use one of: CUSTOMER, ORDERS, LINEITEM, PART, SUPPLIER, PARTSUPP" << endl;
         exit(1);
     }
 
-    vector<uint64_t> aliceKeys;
-    vector<uint64_t> bobKeys;
-    uint32_t aliceSize;
-    uint32_t bobSize;
-    auto bc = gParty.GetCircuit(S_BOOL);
+    RelationName rn;
+    if (filename == "CUSTOMER") rn = CUSTOMER;
+    else if (filename == "ORDERS") rn = ORDERS;
+    else if (filename == "LINEITEM") rn = LINEITEM;
+    else if (filename == "PART") rn = PART;
+    else if (filename == "SUPPLIER") rn = SUPPLIER;
+    else if (filename == "PARTSUPP") rn = PARTSUPP;
 
-    vector<uint32_t> out;
-
-    if(role == "SERVER"){
-        vector<uint32_t> as = {aliceSize};
-        vector<uint32_t> bs;
-        gParty.Send(as);
-        gParty.Recv(bs);
-        PSI psi(aliceKeys, aliceSize, bs[0], PSI::Alice);     
-        out = psi.Intersect();
-    }
-    else{
-        vector<uint32_t> as;
-        vector<uint32_t> bs = {bobSize};
-        gParty.Recv(as);
-        gParty.Send(bs);
-        PSI psi(bobKeys, as[0], bobSize, PSI::Bob);
-        out = psi.Intersect();
+    string datasize = argv[3];
+    if (datasize != "1MB" && datasize != "3MB" && datasize != "10MB" && datasize != "33MB" && datasize != "100MB") {
+        cerr << "Invalid data size. Use one of: 1MB, 3MB, 10MB, 33MB, 100MB" << endl;
+        exit(1);
     }
 
-	auto s_in = bc->PutSharedSIMDINGate(out.size(), out.data(), 1);
-	auto s_out = bc->PutOUTGate(s_in, ALL);
-	uint32_t *realout;
-	uint32_t b, c;
-	gParty.ExecCircuit();
-	s_out->get_clear_value_vec(&realout, &b, &c);
+    DataSize ds;
+    if (datasize == "1MB") ds = _1MB;
+    else if (datasize == "3MB") ds = _3MB;
+    else if (datasize == "10MB") ds = _10MB;
+    else if (datasize == "33MB") ds = _33MB;
+    else if (datasize == "100MB") ds = _100MB;
 
-    if (role == "SERVER") {
-        Relation aliceRelation = fileLoadserver(filename, aliceKeys, aliceSize);
-        serverLogic(gParty, realout, aliceRelation);
-    } else {
-        Relation bobRelation = fileLoadclient(filename, bobKeys, bobSize);
-        clientLogic(gParty, realout, bobRelation);
+    string querykey = argv[4];
+    if (querykey == "") {
+        cerr << "Invalid query key. Please Specify." << endl;
+        exit(1);
     }
+    
+    join(gParty, rn, ds, querykey);
 }
 
 int main(int argc, char* argv[]) {
@@ -172,8 +408,20 @@ int main(int argc, char* argv[]) {
     // 初始化
     initializeParty(gParty, argc, argv);
 
+ 	httplib::Server server1;
+ 	// 处理OPTIONS请求
+    server1.Options("/", handle_options);
+
+    // 处理 GET 请求
+    server1.Get("/", handle_request);
+ 
+    int port1 = 8080;
+	
+    if(role==SERVER){
+     	std::cout << "Listening for requests..." << std::endl;
+     	server1.listen("localhost", port1);	
+	}
     // 关闭通信
     gParty.Reset();
-
     return 0;
 }
