@@ -16,7 +16,7 @@ add_executable(psi
     mine.cpp
 )
 
-add_executable(newpsi2
+add_executable(psi2
     twopartypsi.cpp
 )
 
@@ -34,5 +34,5 @@ target_link_libraries(main
 target_link_libraries(psi 
     PUBLIC secyan)
 
-target_link_libraries(newpsi2 
+target_link_libraries(psi2 
     PUBLIC secyan)
