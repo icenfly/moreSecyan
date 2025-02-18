@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include <set>
-#include <stdexcept> // 引入 std::invalid_argument 和 std::out_of_range 异常处理
+#include <stdexcept> 
 #include <vector>
 #include <algorithm>
 #include <cstdint>
@@ -73,30 +73,6 @@ inline std::string GetFilePath(RelationName rn, DataSize ds)
 {
 	return datapaths[ds] + filenames[rn];
 }
-
-Relation fileLoadserver(string filename, vector<uint64_t>& keys, uint32_t& size) {
-    RelationName rn;
-    Relation::RelationInfo ri = GetRI(CUSTOMER, Q3, _1MB, SERVER);
-    Relation::AnnotInfo ai = {true, true};
-    Relation relation(ri, ai);
-    auto filePath = GetFilePath(CUSTOMER, _1MB);
-	relation.LoadData(filePath.c_str(), "q3_annot");
-    
-
-}
-
-Relation fileLoadclient(string filename, vector<uint64_t>& keys, uint32_t& size) {
-    RelationName rn;
-    Relation::RelationInfo ri = GetRI(ORDERS, Q3, _1MB, CLIENT);
-    Relation::AnnotInfo ai = {true, true};
-    Relation relation(ri, ai);
-    auto filePath = GetFilePath(ORDERS, _1MB);
-	relation.LoadData(filePath.c_str(), "q3_annot");
-    
-
-}
-
-vector<vector<uint64_t>> jiaoji_result;
 
 void sortWithIndex(std::vector<uint64_t>& data0, std::vector<uint64_t>& data1) {
     // 创建一个包含索引的配对数组
@@ -173,7 +149,6 @@ void readSetFromData(vector<vector<string>> data, vector<string> colNames, strin
     // 检查是否找到指定的列名
     if (columnIndex == -1) {
         cerr << "Error: 指定的列名 '" << specColumn << "' 未在列名列表中找到." << endl;
-        return set; // 如果未找到，返回空的 vector
     }
 
     std::set<uint64_t> uniqueSet; // 使用 set 自动去重和排序
@@ -223,8 +198,8 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
     readSetFromData(BobData, BobcolNames, querykey, BobSet);
 
 	PSI *psi = (role == SERVER) ?
-		new PSI(AliceSet, Alicedata.size(), Bobdata.size(), PSI::Alice) :
-		new PSI(BobSet, Alicedata.size(), Bobdata.size(), PSI::Bob);
+		new PSI(AliceSet, AliceSet.size(), BobSet.size(), PSI::Alice) :
+		new PSI(BobSet, AliceSet.size(), BobSet.size(), PSI::Bob);
 	vector<uint32_t> out = psi->Intersect();
 
 	auto s_in = bc->PutSharedSIMDINGate(out.size(), out.data(), 1);
@@ -249,7 +224,7 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 
   		gParty.OTSend(intersectData, intersectData);
 
-        vector<vector<uint64_t>> AliceIntersectData;
+        vector<vector<string>> AliceIntersectData;
         int columnIndex = -1; // 初始化列索引为 -1，表示未找到
 
         // 1. 查找 querykey 在 AlicecolNames 中的位置 columnIndex
@@ -309,7 +284,7 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 		sort(receivedData.begin(), receivedData.begin() + num);
   
 		vector<uint64_t> end_senddata0;
-        vector<vector<uint64_t>> end_senddata1;
+        vector<vector<string>> end_senddata1;
         int end_data_count = 0;
 	
         int columnIndex = -1; // 初始化列索引为 -1，表示未找到
@@ -346,6 +321,35 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
  	delete[] a;
  	delete psi;
 }
+
+void handle_request(const httplib::Request& req, httplib::Response& res) {
+    // 设置 CORS 头
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_header("Access-Control-Allow-Methods", "GET");
+        res.set_header("Access-Control-Allow-Headers", "Content-Type");
+        // 处理来自前端的 HTTP 请求
+        std::cout << "Received request: " << req.method << " " << req.path << std::endl;
+        std::ostringstream response_stream; 
+        auto role = gParty.GetRole();
+      
+        response_stream << "A\t\tB\t\tC\n"; // 循环输出数据行 
+        /*
+        for (const auto& row : jiaoji_result) { 
+            response_stream << row[0] << "\t\t" << row[1] << "\t\t" << row[2] << "\n"; 
+            
+        }*/
+        
+        res.set_content(response_stream.str(), "text/plain");
+    
+        
+    }
+    
+void handle_options(const httplib::Request& req, httplib::Response& res) {
+        // 为OPTIONS请求设置
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        res.set_header("Access-Control-Allow-Headers", "Content-Type");
+    }
 
 // 初始化函数，与 mine.cpp 中的初始化部分对应
 void initializeParty(Party& gParty, int argc, char* argv[]) {
@@ -401,26 +405,27 @@ void initializeParty(Party& gParty, int argc, char* argv[]) {
     }
     
     join(gParty, rn, ds, querykey);
-}
 
+    httplib::Server server1;
+    // 处理OPTIONS请求
+    server1.Options("/", handle_options);
+
+    // 处理 GET 请求
+    server1.Get("/", handle_request);
+
+    int port1 = 8080;
+   
+    if(role == "SERVER"){
+        std::cout << "Listening for requests..." << std::endl;
+        server1.listen("localhost", port1);	
+    }
+}
+    
 int main(int argc, char* argv[]) {
     Party gParty;
     // 初始化
     initializeParty(gParty, argc, argv);
 
- 	httplib::Server server1;
- 	// 处理OPTIONS请求
-    server1.Options("/", handle_options);
-
-    // 处理 GET 请求
-    server1.Get("/", handle_request);
- 
-    int port1 = 8080;
-	
-    if(role==SERVER){
-     	std::cout << "Listening for requests..." << std::endl;
-     	server1.listen("localhost", port1);	
-	}
     // 关闭通信
     gParty.Reset();
     return 0;
