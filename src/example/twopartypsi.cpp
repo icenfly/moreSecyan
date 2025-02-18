@@ -250,10 +250,11 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
  		vector<uint64_t> end_receivedata1;
         vector<vector<uint64_t>> BobIntersectData;
   		gParty.Recv(end_receivedata0);
+        /*
         for(int i = 0; i < end_receivedata0[0]; i++){
             gParty.Recv(end_receivedata1);
             BobIntersectData.push_back(end_receivedata1);
-        }
+        }*/
 
         int intersectCount = 0;
         vector<vector<char*>> intersectResult;
@@ -270,10 +271,10 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
         for(int i = 0; i < end_receivedata0[0]; i++){
             for(auto col : AliceIntersectData[i]){
                 cout<<col<<" ";
-            }
+            }/*
             for(auto col : BobIntersectData[i]){
                 cout<<col<<" ";
-            }
+            }*/
             cout<<endl;
         }
       	cout<<"total:   "<<intersectCount<<endl;
@@ -311,10 +312,11 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 
 		// todo 加噪声（差分隐私）
         end_senddata0.push_back(end_data_count);
+        /*
 		gParty.Send(end_senddata0);
         for(int i = 0; i < end_data_count; i++){
             gParty.Send(end_senddata1[i]);
-        }
+        }*/
   		cout<<"Bob transmitted the data to Alice successfully"<<endl;
  	}
  	
