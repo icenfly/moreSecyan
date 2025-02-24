@@ -91,7 +91,7 @@ void sortWithIndex(std::vector<uint64_t>& data0, std::vector<uint64_t>& data1) {
     }
 }
 
-void readData(string filename, vector<string>& columnNames, vector<vector<string>>& data) {
+void readData(string filename, vector<char*>& columnNames, vector<vector<char*>>& data) {
     int columnNum;
 
     ifstream inputFile(filename); // 打开文件
@@ -118,16 +118,20 @@ void readData(string filename, vector<string>& columnNames, vector<vector<string
     stringstream ss_columnNames(line); // 使用stringstream来分割字符串
     string columnName;
     while (getline(ss_columnNames, columnName, '|')) {
-        columnNames.push_back(columnName);
+        char* cstr = new char[columnName.length() + 1];
+        strcpy(cstr, columnName.c_str());
+        columnNames.push_back(cstr);
     }
 
     // 读取 data
     while (getline(inputFile, line)) {
         stringstream ss_data(line); // 同样使用stringstream来分割每一行数据
         string cell;
-        vector<string> rowData;
+        vector<char*> rowData;
         while (getline(ss_data, cell, '|')) {
-            rowData.push_back(cell);
+            char* cstr = new char[cell.length() + 1];
+            strcpy(cstr, cell.c_str());
+            rowData.push_back(cstr);
         }
         data.push_back(rowData);
     }
@@ -135,12 +139,12 @@ void readData(string filename, vector<string>& columnNames, vector<vector<string
     inputFile.close(); // 关闭文件
 }
 
-void readSetFromData(vector<vector<string>> data, vector<string> colNames, string specColumn, vector<uint64_t>& set) {
+void readSetFromData(vector<vector<char*>> data, vector<char*> colNames, string specColumn, vector<uint64_t>& set) {
     int columnIndex = -1; // 初始化列索引为 -1，表示未找到
 
     // 1. 查找 specColumn 在 colNames 中的索引
     for (int i = 0; i < colNames.size(); ++i) {
-        if (colNames[i] == specColumn) {
+        if (string(colNames[i]) == specColumn) {
             columnIndex = i; // 找到列名，记录索引
             break; // 找到即可跳出循环
         }
@@ -185,10 +189,10 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 	clock_t start;
  	start = clock();
 
-    vector<string> AlicecolNames;
-    vector<string> BobcolNames;
-    vector<vector<string>> AliceData;
-    vector<vector<string>> BobData;
+    vector<char*> AlicecolNames;
+    vector<char*> BobcolNames;
+    vector<vector<char*>> AliceData;
+    vector<vector<char*>> BobData;
     readData(GetFilePath(rn, ds), AlicecolNames, AliceData);
     readData(GetFilePath(rn, ds), BobcolNames, BobData);
 
@@ -224,12 +228,12 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 
   		gParty.OTSend(intersectData, intersectData);
 
-        vector<vector<string>> AliceIntersectData;
+        vector<vector<char*>> AliceIntersectData;
         int columnIndex = -1; // 初始化列索引为 -1，表示未找到
 
         // 1. 查找 querykey 在 AlicecolNames 中的位置 columnIndex
         for (int i = 0; i < AlicecolNames.size(); ++i) {
-            if (AlicecolNames[i] == querykey) {
+            if (string(AlicecolNames[i]) == querykey) {
                 columnIndex = i; // 找到列名，记录索引
                 break; // 找到即可跳出循环
             }
@@ -237,7 +241,7 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 
         // 2. 根据 columnIndex 从 BobData 中提取数据
         for(int i = 0; i < AliceData.size(); i++){
-            if(find(intersectData.begin(), intersectData.end(), AliceData[i][columnIndex]) != intersectData.end()){
+            if(find(intersectData.begin(), intersectData.end(), string(AliceData[i][columnIndex])) != intersectData.end()){
                 AliceIntersectData.push_back(AliceData[i]);
             }
         }
@@ -253,7 +257,7 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
         }*/
 
         int intersectCount = 0;
-        vector<vector<string>> intersectResult;
+        vector<vector<char*>> intersectResult;
 
 
       	cout<<"Intersect Result"<<endl;
@@ -285,14 +289,14 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 		sort(receivedData.begin(), receivedData.begin() + num);
   
 		vector<uint64_t> end_senddata0;
-        vector<vector<string>> end_senddata1;
+        vector<vector<char*>> end_senddata1;
         int end_data_count = 0;
 	
         int columnIndex = -1; // 初始化列索引为 -1，表示未找到
 
         // 1. 查找 querykey 在 BobcolNames 中的位置 columnIndex
         for (int i = 0; i < BobcolNames.size(); ++i) {
-            if (BobcolNames[i] == querykey) {
+            if (string(BobcolNames[i]) == querykey) {
                 columnIndex = i; // 找到列名，记录索引
                 break; // 找到即可跳出循环
             }
@@ -300,7 +304,7 @@ void join(Party& gParty, RelationName rn, DataSize ds, string querykey)
 
         // 2. 根据 columnIndex 从 BobData 中提取数据
         for(int i = 0; i < BobData.size(); i++){
-            if(find(receivedData.begin(), receivedData.end(), BobData[i][columnIndex]) != receivedData.end()){
+            if(find(receivedData.begin(), receivedData.end(), string(BobData[i][columnIndex])) != receivedData.end()){
                 end_senddata1.push_back(BobData[i]);
                 end_data_count ++;
             }
