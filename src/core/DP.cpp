@@ -21,14 +21,14 @@ double generateLaplaceNoise(double sensitivity, double epsilon) {
     return -lambda * std::log(1.0 - u);
 }
 
-double calculateAverage(std::vector<int>& data) {
+double calculateAverage(std::vector<int> data) {
     if (data.empty()) {
         return 0;
     }
     return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
 }
 
-double differentiallyPrivateAverage(std::vector<int>& data, double epsilon, double data_range) {
+double differentiallyPrivateAverage(std::vector<int> data, double epsilon, double data_range) {
     if (data.empty()) {
         return 0;
     }
@@ -38,7 +38,7 @@ double differentiallyPrivateAverage(std::vector<int>& data, double epsilon, doub
     return raw_average + noise;
 }
 
-double calculateDataRange(std::vector<int>& data) {
+double calculateDataRange(std::vector<int> data) {
     if (data.empty()) {
         return 0;
     }
@@ -47,7 +47,7 @@ double calculateDataRange(std::vector<int>& data) {
     return max_val - min_val; 
 }
 
-void testEpsilonValues(std::vector<int>& data, double suggestedDataRange, std::vector<double>& epsilonValues) {
+void testEpsilonValues(std::vector<int> data, double suggestedDataRange, std::vector<double> epsilonValues) {
     std::cout << "\n--- 测试不同 Epsilon 值 (使用 SECYAN::RNG) ---" << std::endl;
     std::cout << "建议的 data_range (基于数组范围): " << suggestedDataRange << std::endl;
     std::cout << "原始平均值: " << calculateAverage(data) << std::endl;
