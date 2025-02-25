@@ -292,18 +292,6 @@ bool execute_query(int role, int query_type, int data_size, bool result_protecti
             comm_cost = 0.0;
         }
         
-        // 检查是否可以连接到服务器（如果是客户端角色）
-        if (user_role == CLIENT) {
-            // 尝试连接到服务器端口，检查服务器是否在运行
-            httplib::Client cli(server_address, server_port);
-            auto res = cli.Get("/ping");
-            if (!res || res->status != 200) {
-                std::lock_guard<std::mutex> lock(result_mutex);
-                query_results = "错误：无法连接到服务器。请确保服务器端正在运行，并且地址和端口正确。";
-                return false;
-            }
-        }
-        
         try {
             // 初始化连接
             gParty.Init(server_address, server_port, user_role);
