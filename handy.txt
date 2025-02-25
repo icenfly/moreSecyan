@@ -1,46 +1,21 @@
- 91%] Building CXX object src/core/CMakeFiles/secyan.dir/relation.cpp.o
-[ 91%] Building CXX object src/core/CMakeFiles/secyan.dir/DP.cpp.o
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp: In function ‘double differentiallyPrivateAverage(std::vector<int>, double, double)’:
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:36:42: error: call of overloaded ‘calculateAverage(std::vector<int>&)’ is ambiguous
-   36 |     double raw_average = calculateAverage(data);
-      |                          ~~~~~~~~~~~~~~~~^~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:24:8: note: candidate: ‘double calculateAverage(std::vector<int>)’
-   24 | double calculateAverage(std::vector<int> data) {
-      |        ^~~~~~~~~~~~~~~~
-In file included from /home/ic/Desktop/moreSecyan/src/core/DP.cpp:8:
-/home/ic/Desktop/moreSecyan/src/core/DP.h:9:12: note: candidate: ‘double SECYAN::calculateAverage(std::vector<int>)’
-    9 |     double calculateAverage(std::vector<int> data);
-      |            ^~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:37:40: error: call of overloaded ‘generateLaplaceNoise(double&, double&)’ is ambiguous
-   37 |     double noise = generateLaplaceNoise(sensitivity, epsilon);
-      |                    ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:11:8: note: candidate: ‘double generateLaplaceNoise(double, double)’
-   11 | double generateLaplaceNoise(double sensitivity, double epsilon) {
-      |        ^~~~~~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.h:8:12: note: candidate: ‘double SECYAN::generateLaplaceNoise(double, double)’
-    8 |     double generateLaplaceNoise(double sensitivity, double epsilon);
-      |            ^~~~~~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp: In function ‘void testEpsilonValues(std::vector<int>, double, std::vector<double>)’:
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:53:52: error: call of overloaded ‘calculateAverage(std::vector<int>&)’ is ambiguous
-   53 |     std::cout << "原始平均值: " << calculateAverage(data) << std::endl;
-      |                                    ~~~~~~~~~~~~~~~~^~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:24:8: note: candidate: ‘double calculateAverage(std::vector<int>)’
-   24 | double calculateAverage(std::vector<int> data) {
-      |        ^~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.h:9:12: note: candidate: ‘double SECYAN::calculateAverage(std::vector<int>)’
-    9 |     double calculateAverage(std::vector<int> data);
-      |            ^~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:58:101: error: call of overloaded ‘differentiallyPrivateAverage(std::vector<int>&, double&, double&)’ is ambiguous
-   58 | 值 (运行 " << i + 1 << "): " << differentiallyPrivateAverage(data, epsilon, suggestedDataRange) << std::endl;
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/home/ic/Desktop/moreSecyan/src/core/DP.cpp:31:8: note: candidate: ‘double differentiallyPrivateAverage(std::vector<int>, double, double)’
-   31 | double differentiallyPrivateAverage(std::vector<int> data, double epsilon, double data_range) {
-      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/home/ic/Desktop/moreSecyan/src/core/DP.h:10:12: note: candidate: ‘double SECYAN::differentiallyPrivateAverage(std::vector<int>, double, double)’
-   10 |     double differentiallyPrivateAverage(std::vector<int> data, double epsilon, double data_range);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-make[2]: *** [src/core/CMakeFiles/secyan.dir/build.make:188: src/core/CMakeFiles/secyan.dir/DP.cpp.o] Error 1
-make[1]: *** [CMakeFiles/Makefile2:673: src/core/CMakeFiles/secyan.dir/all] Error 2
+[ 99%] Building CXX object src/example/CMakeFiles/mpsi.dir/multipartypsi.cpp.o
+/home/ic/Desktop/moreSecyan/src/example/multipartypsi.cpp:277:66: error: ‘bool run_query(int, int, int, bool, const std::string&, int)’ redeclared as different kind of entity
+  277 |                const std::string& server_address, int server_port) {
+      |                                                                  ^
+In file included from /home/ic/Desktop/moreSecyan/src/example/multipartypsi.cpp:4:
+/home/ic/Desktop/moreSecyan/src/example/TPCH.h:41:7: note: previous declaration ‘using run_query = void(enum DataSize, bool)’
+   41 | using run_query = void(DataSize, bool);
+      |       ^~~~~~~~~
+/home/ic/Desktop/moreSecyan/src/example/multipartypsi.cpp: In lambda function:
+/home/ic/Desktop/moreSecyan/src/example/multipartypsi.cpp:347:60: error: expression list treated as compound expression in functional cast [-fpermissive]
+  347 |                                 server_address, server_port);
+      |                                                            ^
+/home/ic/Desktop/moreSecyan/src/example/multipartypsi.cpp:346:24: error: invalid cast to function type ‘run_query’ {aka ‘void(DataSize, bool)’}
+  346 |         bool success = run_query(role, query_type, data_size, result_protection,
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  347 |                                 server_address, server_port);
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make[2]: *** [src/example/CMakeFiles/mpsi.dir/build.make:76: src/example/CMakeFiles/mpsi.dir/multipartypsi.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:833: src/example/CMakeFiles/mpsi.dir/all] Error 2
 make: *** [Makefile:136: all] Error 2
 
