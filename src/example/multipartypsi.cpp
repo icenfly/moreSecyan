@@ -331,6 +331,7 @@ void start_web_server(int port) {
     httplib::Server svr;
     
     // 获取当前工作目录
+	/*
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         std::string web_dir = std::string(cwd) + "/web";
@@ -351,7 +352,9 @@ void start_web_server(int port) {
     } else {
         std::cerr << "无法获取当前工作目录，使用相对路径" << std::endl;
         svr.set_mount_point("/", "./web");
-    }
+    }*/
+
+	svr.set_mount_point("/", "../../../web");
     
     // 处理查询请求
     svr.Post("/run_query", [](const httplib::Request& req, httplib::Response& res) {
