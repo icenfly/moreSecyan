@@ -10,6 +10,9 @@
 #include <thread>
 #include <mutex>
 #include "../core/httplib.h"
+#include <cstring>
+#include <sys/stat.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace SECYAN;
@@ -327,8 +330,28 @@ bool execute_query(int role, int query_type, int data_size, bool result_protecti
 void start_web_server(int port) {
     httplib::Server svr;
     
-    // 设置静态文件目录
-    svr.set_mount_point("/", "./web");
+    // 获取当前工作目录
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        std::string web_dir = std::string(cwd) + "/web";
+        std::cout << "Web目录路径: " << web_dir << std::endl;
+        
+        // 检查web目录是否存在
+        struct stat info;
+        if (stat(web_dir.c_str(), &info) == 0 && (info.st_mode & S_IFDIR)) {
+            // 设置静态文件目录
+            svr.set_mount_point("/", web_dir);
+        } else {
+            std::cerr << "警告: Web目录不存在: " << web_dir << std::endl;
+            std::cerr << "尝试使用相对路径..." << std::endl;
+            
+            // 尝试使用相对路径
+            svr.set_mount_point("/", "./web");
+        }
+    } else {
+        std::cerr << "无法获取当前工作目录，使用相对路径" << std::endl;
+        svr.set_mount_point("/", "./web");
+    }
     
     // 处理查询请求
     svr.Post("/run_query", [](const httplib::Request& req, httplib::Response& res) {
