@@ -6,128 +6,9 @@
 #include "../core/relation.h"
 #include <iostream>
 #include <chrono>
-#include <sstream>
-#include <thread>
-#include <mutex>
-#include "../core/httplib.h"
-#include <cstring>
-#include <sys/stat.h>
-#include <unistd.h>
 
 using namespace std;
 using namespace SECYAN;
-
-// 简单的JSON解析和生成类
-class SimpleJSON {
-public:
-    // 从字符串解析JSON
-    static std::map<std::string, std::string> parse(const std::string& json_str) {
-        std::map<std::string, std::string> result;
-        size_t pos = 0;
-        
-        // 跳过开头的 {
-        pos = json_str.find('{', pos);
-        if (pos == std::string::npos) return result;
-        pos++;
-        
-        while (pos < json_str.length()) {
-            // 跳过空白
-            while (pos < json_str.length() && isspace(json_str[pos])) pos++;
-            if (pos >= json_str.length() || json_str[pos] == '}') break;
-            
-            // 解析键
-            if (json_str[pos] != '"') {
-                pos = json_str.find('"', pos);
-                if (pos == std::string::npos) break;
-            }
-            pos++; // 跳过 "
-            
-            size_t key_start = pos;
-            pos = json_str.find('"', pos);
-            if (pos == std::string::npos) break;
-            
-            std::string key = json_str.substr(key_start, pos - key_start);
-            pos++; // 跳过 "
-            
-            // 跳过 :
-            pos = json_str.find(':', pos);
-            if (pos == std::string::npos) break;
-            pos++;
-            
-            // 跳过空白
-            while (pos < json_str.length() && isspace(json_str[pos])) pos++;
-            
-            // 解析值
-            std::string value;
-            if (pos < json_str.length()) {
-                if (json_str[pos] == '"') {
-                    // 字符串值
-                    pos++; // 跳过 "
-                    size_t value_start = pos;
-                    pos = json_str.find('"', pos);
-                    if (pos == std::string::npos) break;
-                    
-                    value = json_str.substr(value_start, pos - value_start);
-                    pos++; // 跳过 "
-                } else if (isdigit(json_str[pos]) || json_str[pos] == '-') {
-                    // 数字值
-                    size_t value_start = pos;
-                    while (pos < json_str.length() && 
-                           (isdigit(json_str[pos]) || json_str[pos] == '.' || 
-                            json_str[pos] == '-' || json_str[pos] == 'e' || 
-                            json_str[pos] == 'E' || json_str[pos] == '+')) {
-                        pos++;
-                    }
-                    value = json_str.substr(value_start, pos - value_start);
-                } else if (json_str.substr(pos, 4) == "true") {
-                    value = "true";
-                    pos += 4;
-                } else if (json_str.substr(pos, 5) == "false") {
-                    value = "false";
-                    pos += 5;
-                } else if (json_str.substr(pos, 4) == "null") {
-                    value = "null";
-                    pos += 4;
-                }
-            }
-            
-            result[key] = value;
-            
-            // 跳过逗号
-            pos = json_str.find_first_of(",}", pos);
-            if (pos == std::string::npos) break;
-            if (json_str[pos] == '}') break;
-            pos++; // 跳过 ,
-        }
-        
-        return result;
-    }
-    
-    // 生成JSON字符串
-    static std::string stringify(const std::map<std::string, std::string>& data) {
-        std::stringstream ss;
-        ss << "{";
-        
-        bool first = true;
-        for (const auto& pair : data) {
-            if (!first) ss << ",";
-            first = false;
-            
-            ss << "\"" << pair.first << "\":";
-            
-            // 检查值是否是数字、布尔值或null
-            if (pair.second == "true" || pair.second == "false" || pair.second == "null" ||
-                (pair.second.length() > 0 && (isdigit(pair.second[0]) || pair.second[0] == '-'))) {
-                ss << pair.second;
-            } else {
-                ss << "\"" << pair.second << "\"";
-            }
-        }
-        
-        ss << "}";
-        return ss.str();
-    }
-};
 
 size_t NumRows[RTOTAL][DTOTAL] = {
 	{150, 450, 1500, 4950, 15000},
@@ -168,12 +49,6 @@ std::string datapath[] = {
 	"../../../data/33MB/",
 	"../../../data/100MB/"};
 
-// 用于存储查询结果的全局变量
-std::mutex result_mutex;
-std::string query_results;
-std::string running_time;
-double comm_cost = 0.0;
-
 inline Relation::RelationInfo GetRI(RelationName rn, QueryName qn, DataSize ds, e_role owner)
 {
 	Relation::RelationInfo ri = {
@@ -191,26 +66,6 @@ inline std::string GetFilePath(RelationName rn, DataSize ds)
 	return datapath[ds] + filename[rn];
 }
 
-// 自定义输出流，用于捕获查询结果
-class CaptureStream : public std::stringstream {
-public:
-    CaptureStream() : std::stringstream() {}
-    
-    template<typename T>
-    CaptureStream& operator<<(const T& value) {
-        std::stringstream::operator<<(value);
-        return *this;
-    }
-    
-    // 重载endl操作符
-    CaptureStream& operator<<(std::ostream& (*manip)(std::ostream&)) {
-        manip(*this);
-        return *this;
-    }
-};
-
-// 捕获查询结果的输出流
-CaptureStream resultStream;
 
 void run_Q3(DataSize ds, bool printResult, bool resultProtection)
 {
@@ -252,195 +107,17 @@ void run_Q3(DataSize ds, bool printResult, bool resultProtection)
 	if (printResult){
 		if(resultProtection){
 			orders.RevealAnnotToOwner();
-			// 将结果输出到捕获流
-			std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
-			std::cout.rdbuf(resultStream.rdbuf());
-			
 			orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
-			
-			// 恢复标准输出
-			std::cout.rdbuf(oldCoutStreamBuf);
 		}
 		else{
 			orders.RevealAnnotToOwner();
-			// 将结果输出到捕获流
-			std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
-			std::cout.rdbuf(resultStream.rdbuf());
-			
 			orders.Print();
-			
-			// 恢复标准输出
-			std::cout.rdbuf(oldCoutStreamBuf);
 		}
 	}
 }
 
-// 运行查询的函数，用于Web服务器调用
-bool execute_query(int role, int query_type, int data_size, bool result_protection, 
-               const std::string& server_address, int server_port) {
-    try {
-        e_role user_role = (e_role)role;
-        QueryName qn = (QueryName)query_type;
-        DataSize ds = (DataSize)data_size;
-        
-        // 清空之前的结果
-        {
-            std::lock_guard<std::mutex> lock(result_mutex);
-            resultStream.str("");
-            query_results = "";
-            running_time = "";
-            comm_cost = 0.0;
-        }
-        
-        try {
-            // 初始化连接
-            gParty.Init(server_address, server_port, user_role);
-            
-            // 开始计时
-            gParty.Tick("Running time");
-            
-            // 根据查询类型运行相应的查询
-            if (qn == Q3) {
-                run_Q3(ds, true, result_protection);
-            } else {
-                // 其他查询类型的实现可以在这里添加
-                std::lock_guard<std::mutex> lock(result_mutex);
-                query_results = "错误：所选查询类型尚未实现。";
-                return false;
-            }
-            
-            // 结束计时并获取运行时间
-            auto elapsed = gParty.Tick("Running time");
-            running_time = elapsed;
-            
-            // 获取通信成本
-            comm_cost = gParty.GetCommCostAndResetStats() / 1024.0 / 1024.0;
-            
-            // 保存查询结果
-            {
-                std::lock_guard<std::mutex> lock(result_mutex);
-                query_results = resultStream.str();
-            }
-            
-            return true;
-        } catch (const std::exception& e) {
-            std::string error_msg = e.what();
-            std::cerr << "Error during query execution: " << error_msg << std::endl;
-            
-            std::lock_guard<std::mutex> lock(result_mutex);
-            if (error_msg.find("connect error") != std::string::npos || 
-                error_msg.find("socket") != std::string::npos) {
-                query_results = "错误：无法建立与对方的连接。请确保：\n"
-                               "1. 您已经在另一个终端窗口中启动了另一个实例\n"
-                               "2. 一个实例选择了服务器角色，另一个选择了客户端角色\n"
-                               "3. 两个实例使用相同的服务器地址和端口";
-            } else {
-                query_results = std::string("错误：") + error_msg;
-            }
-            return false;
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "Error running query: " << e.what() << std::endl;
-        std::lock_guard<std::mutex> lock(result_mutex);
-        query_results = std::string("错误：") + e.what();
-        return false;
-    }
-}
-
-// Web服务器函数
-void start_web_server(int port) {
-    httplib::Server svr;
-
-	// 获取当前工作目录
-    char cwd[1024];
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        std::string web_dir = std::string(cwd) + "/web";
-        std::cout << "Web目录路径: " << web_dir << std::endl;
-        
-        // 检查web目录是否存在
-        struct stat info;
-        if (stat(web_dir.c_str(), &info) == 0 && (info.st_mode & S_IFDIR)) {
-            // 设置静态文件目录
-            svr.set_mount_point("/", web_dir);
-        } else {
-            std::cerr << "警告: Web目录不存在: " << web_dir << std::endl;
-            std::cerr << "尝试使用相对路径..." << std::endl;
-            
-            // 尝试使用相对路径
-            svr.set_mount_point("/", "./web");
-        }
-    } else {
-        std::cerr << "无法获取当前工作目录，使用相对路径" << std::endl;
-        svr.set_mount_point("/", "./web");
-    }
-	//svr.set_mount_point("/", "../../../web");
-    
-    // 添加ping端点，用于检查服务器是否在运行
-    svr.Get("/ping", [](const httplib::Request&, httplib::Response& res) {
-        res.set_content("pong", "text/plain");
-    });
-    
-    // 处理查询请求
-    svr.Post("/run_query", [](const httplib::Request& req, httplib::Response& res) {
-        // 解析JSON请求
-        auto json = SimpleJSON::parse(req.body);
-        
-        int role = std::stoi(json["role"]);
-        int query_type = std::stoi(json["query_type"]);
-        int data_size = std::stoi(json["data_size"]);
-        bool result_protection = json["result_protection"] == "true";
-        std::string server_address = json["server_address"];
-        int server_port = std::stoi(json["server_port"]);
-        
-        // 运行查询
-        bool success = execute_query(role, query_type, data_size, result_protection, 
-                                server_address, server_port);
-        
-        // 构建响应
-        std::map<std::string, std::string> responseData;
-        if (success) {
-            std::lock_guard<std::mutex> lock(result_mutex);
-            responseData["status"] = "success";
-            responseData["results"] = query_results;
-            responseData["running_time"] = running_time;
-            responseData["comm_cost"] = std::to_string(comm_cost);
-        } else {
-            responseData["status"] = "error";
-            std::lock_guard<std::mutex> lock(result_mutex);
-            responseData["error"] = query_results.empty() ? "查询执行失败" : query_results;
-        }
-        
-        std::string response = SimpleJSON::stringify(responseData);
-        
-        res.set_content(response, "application/json");
-    });
-    
-    // 启动服务器
-    std::cout << "Web服务器启动在 http://localhost:" << port << std::endl;
-    svr.listen("0.0.0.0", port);
-}
-
-int main(int argc, char **argv)
+int main(int argc, char **)
 {
-    // 检查是否有命令行参数
-    if (argc > 1 && std::string(argv[1]) == "--web") {
-        // 启动Web服务器模式
-        int port = 8080;
-        if (argc > 2) {
-            port = std::stoi(argv[2]);
-        }
-        
-        std::cout << "启动Web服务器模式..." << std::endl;
-        std::cout << "注意：要使PSI查询正常工作，您需要在两个不同的终端窗口中运行两个实例：" << std::endl;
-        std::cout << "1. 一个实例作为服务器角色（在Web界面中选择'服务器'）" << std::endl;
-        std::cout << "2. 另一个实例作为客户端角色（在Web界面中选择'客户端'）" << std::endl;
-        std::cout << "两个实例都应该使用相同的服务器地址和端口（默认为127.0.0.1:7766）" << std::endl;
-        
-        start_web_server(port);
-        return 0;
-    }
-    
-    // 传统命令行模式
     int irole, iqn, ids;
     string address = "127.0.0.1";
     uint16_t port = 7766;
