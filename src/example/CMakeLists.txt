@@ -16,8 +16,8 @@ add_executable(psi
     mine.cpp
 )
 
-add_executable(psi2
-    twopartypsi.cpp
+add_executable(mpsi
+    multipartypsi.cpp
 )
 
 target_link_libraries(benchmark 
@@ -34,5 +34,5 @@ target_link_libraries(main
 target_link_libraries(psi 
     PUBLIC secyan)
 
-target_link_libraries(psi2 
+target_link_libraries(mpsi
     PUBLIC secyan)
