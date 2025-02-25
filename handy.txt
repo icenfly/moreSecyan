@@ -18,4 +18,29 @@ In file included from /home/ic/Desktop/moreSecyan/src/example/multipartypsi.cpp:
 make[2]: *** [src/example/CMakeFiles/mpsi.dir/build.make:76: src/example/CMakeFiles/mpsi.dir/multipartypsi.cpp.o] Error 1
 make[1]: *** [CMakeFiles/Makefile2:833: src/example/CMakeFiles/mpsi.dir/all] Error 2
 make: *** [Makefile:136: all] Error 2
-
+Web目录路径: /home/ic/Desktop/moreSecyan/Release/src/example/web
+Web服务器启动在 http://localhost:8080
+Error running query: rt error at /home/ic/Desktop/moreSecyan/extern/libOTe/cryptoTools/cryptoTools/Network/Session.cpp:54
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+Error running query: rt error at /home/ic/Desktop/moreSecyan/extern/libOTe/cryptoTools/cryptoTools/Network/Session.cpp:54
+Error running query: rt error at /home/ic/Desktop/moreSecyan/extern/libOTe/cryptoTools/cryptoTools/Network/Session.cpp:54
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
+client socket connect error (hangs).
