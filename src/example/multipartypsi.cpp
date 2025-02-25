@@ -292,36 +292,69 @@ bool execute_query(int role, int query_type, int data_size, bool result_protecti
             comm_cost = 0.0;
         }
         
-        // 初始化连接
-        gParty.Init(server_address, server_port, user_role);
+        // 检查是否可以连接到服务器（如果是客户端角色）
+        if (user_role == CLIENT) {
+            // 尝试连接到服务器端口，检查服务器是否在运行
+            httplib::Client cli(server_address, server_port);
+            auto res = cli.Get("/ping");
+            if (!res || res->status != 200) {
+                std::lock_guard<std::mutex> lock(result_mutex);
+                query_results = "错误：无法连接到服务器。请确保服务器端正在运行，并且地址和端口正确。";
+                return false;
+            }
+        }
         
-        // 开始计时
-        gParty.Tick("Running time");
-        
-        // 根据查询类型运行相应的查询
-        if (qn == Q3) {
-            run_Q3(ds, true, result_protection);
-        } else {
-            // 其他查询类型的实现可以在这里添加
+        try {
+            // 初始化连接
+            gParty.Init(server_address, server_port, user_role);
+            
+            // 开始计时
+            gParty.Tick("Running time");
+            
+            // 根据查询类型运行相应的查询
+            if (qn == Q3) {
+                run_Q3(ds, true, result_protection);
+            } else {
+                // 其他查询类型的实现可以在这里添加
+                std::lock_guard<std::mutex> lock(result_mutex);
+                query_results = "错误：所选查询类型尚未实现。";
+                return false;
+            }
+            
+            // 结束计时并获取运行时间
+            auto elapsed = gParty.Tick("Running time");
+            running_time = elapsed;
+            
+            // 获取通信成本
+            comm_cost = gParty.GetCommCostAndResetStats() / 1024.0 / 1024.0;
+            
+            // 保存查询结果
+            {
+                std::lock_guard<std::mutex> lock(result_mutex);
+                query_results = resultStream.str();
+            }
+            
+            return true;
+        } catch (const std::exception& e) {
+            std::string error_msg = e.what();
+            std::cerr << "Error during query execution: " << error_msg << std::endl;
+            
+            std::lock_guard<std::mutex> lock(result_mutex);
+            if (error_msg.find("connect error") != std::string::npos || 
+                error_msg.find("socket") != std::string::npos) {
+                query_results = "错误：无法建立与对方的连接。请确保：\n"
+                               "1. 您已经在另一个终端窗口中启动了另一个实例\n"
+                               "2. 一个实例选择了服务器角色，另一个选择了客户端角色\n"
+                               "3. 两个实例使用相同的服务器地址和端口";
+            } else {
+                query_results = std::string("错误：") + error_msg;
+            }
             return false;
         }
-        
-        // 结束计时并获取运行时间
-        auto elapsed = gParty.Tick("Running time");
-        running_time = elapsed;
-        
-        // 获取通信成本
-        comm_cost = gParty.GetCommCostAndResetStats() / 1024.0 / 1024.0;
-        
-        // 保存查询结果
-        {
-            std::lock_guard<std::mutex> lock(result_mutex);
-            query_results = resultStream.str();
-        }
-        
-        return true;
     } catch (const std::exception& e) {
         std::cerr << "Error running query: " << e.what() << std::endl;
+        std::lock_guard<std::mutex> lock(result_mutex);
+        query_results = std::string("错误：") + e.what();
         return false;
     }
 }
@@ -329,32 +362,13 @@ bool execute_query(int role, int query_type, int data_size, bool result_protecti
 // Web服务器函数
 void start_web_server(int port) {
     httplib::Server svr;
-    
-    // 获取当前工作目录
-	/*
-    char cwd[1024];
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        std::string web_dir = std::string(cwd) + "/web";
-        std::cout << "Web目录路径: " << web_dir << std::endl;
-        
-        // 检查web目录是否存在
-        struct stat info;
-        if (stat(web_dir.c_str(), &info) == 0 && (info.st_mode & S_IFDIR)) {
-            // 设置静态文件目录
-            svr.set_mount_point("/", web_dir);
-        } else {
-            std::cerr << "警告: Web目录不存在: " << web_dir << std::endl;
-            std::cerr << "尝试使用相对路径..." << std::endl;
-            
-            // 尝试使用相对路径
-            svr.set_mount_point("/", "./web");
-        }
-    } else {
-        std::cerr << "无法获取当前工作目录，使用相对路径" << std::endl;
-        svr.set_mount_point("/", "./web");
-    }*/
 
 	svr.set_mount_point("/", "../../../web");
+    
+    // 添加ping端点，用于检查服务器是否在运行
+    svr.Get("/ping", [](const httplib::Request&, httplib::Response& res) {
+        res.set_content("pong", "text/plain");
+    });
     
     // 处理查询请求
     svr.Post("/run_query", [](const httplib::Request& req, httplib::Response& res) {
@@ -382,7 +396,8 @@ void start_web_server(int port) {
             responseData["comm_cost"] = std::to_string(comm_cost);
         } else {
             responseData["status"] = "error";
-            responseData["error"] = "查询执行失败";
+            std::lock_guard<std::mutex> lock(result_mutex);
+            responseData["error"] = query_results.empty() ? "查询执行失败" : query_results;
         }
         
         std::string response = SimpleJSON::stringify(responseData);
@@ -404,6 +419,13 @@ int main(int argc, char **argv)
         if (argc > 2) {
             port = std::stoi(argv[2]);
         }
+        
+        std::cout << "启动Web服务器模式..." << std::endl;
+        std::cout << "注意：要使PSI查询正常工作，您需要在两个不同的终端窗口中运行两个实例：" << std::endl;
+        std::cout << "1. 一个实例作为服务器角色（在Web界面中选择'服务器'）" << std::endl;
+        std::cout << "2. 另一个实例作为客户端角色（在Web界面中选择'客户端'）" << std::endl;
+        std::cout << "两个实例都应该使用相同的服务器地址和端口（默认为127.0.0.1:7766）" << std::endl;
+        
         start_web_server(port);
         return 0;
     }
