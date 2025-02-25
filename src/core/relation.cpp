@@ -193,6 +193,76 @@ namespace SECYAN
 		std::cout << std::endl;
 	}
 
+	void Relation::Print_Avg_ResultProtection(const char *msg, int limit_size, bool showZeroAnnotedTuple)
+	{
+		bool dummy = IsDummy();
+		if (m_RI.owner != gParty.GetRole() && m_AI.knownByOwner)
+		{
+			std::cout << "Dummy Relation!" << std::endl;
+			std::cout << std::endl;
+			return;
+		}
+
+		std::cout << "row_num" << '\t';
+		if (!dummy)
+			for (auto attrName : m_RI.attrNames)
+				std::cout << attrName << '\t';
+		std::cout << "annotation" << std::endl;
+		uint64_t i_value, year, month, day;
+		uint32_t out, printed = 0;
+		float f_value;
+		const int arrlen = sizeof(uint64_t) / sizeof(char);
+		char padded_str[arrlen + 1] = "";
+		double avg = 0;
+		for (uint32_t i = 0; i < m_RI.numRows && printed < limit_size; i++)
+		{
+			if (m_AI.knownByOwner && (m_Annot[i] == 0 && !showZeroAnnotedTuple || m_Tuples[i].IsDummy()))
+				continue;
+			printed++;
+			std::cout << i + 1 << '\t';
+			if (!dummy)
+			{
+				for (uint32_t j = 0; j < m_RI.attrNames.size(); ++j)
+				{
+					switch (m_RI.attrTypes[j])
+					{
+					case DataType::INT:
+						std::cout << (int)m_Tuples[i][j];
+						break;
+					case DataType::STRING:
+						*(uint64_t *)padded_str = m_Tuples[i][j];
+						std::cout << padded_str; // for simplicity
+						break;
+					case DataType::DATE:
+						i_value = m_Tuples[i][j];
+						day = i_value % 100;
+						i_value /= 100;
+						month = i_value % 100;
+						i_value /= 100;
+						year = i_value;
+						std::cout << year << '-' << std::setfill('0') << std::setw(2) << month << '-' << std::setfill('0') << std::setw(2) << day;
+						break;
+					case DataType::DECIMAL:
+						f_value = (float)(int)m_Tuples[i][j] / 100;
+						std::cout << std::setprecision(2) << std::fixed << f_value;
+						break;
+					}
+					std::cout << '\t';
+				}
+			}
+			std::cout << (int)m_Annot[i] << std::endl;
+			
+			avg = avg + (m_Annot[i] - avg) / printed;
+		}
+		if (printed == 0){
+			std::cout << "Empty Relation!" << std::endl;
+		}
+		else{
+			std::cout << msg << " = " << avg << std::endl;
+		}
+		std::cout << std::endl;
+	}
+
 	void Relation::PrintTableWithoutRevealing(const char *msg, int limit_size)
 	{
 		auto annot = m_Annot;

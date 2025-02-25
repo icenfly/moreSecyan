@@ -102,12 +102,18 @@ void run_Q3(DataSize ds, bool printResult, bool resultProtection)
 	// Two OEPs: 25.8395ms
 	// AnnotMul: 51.1201ms
 
-	if(resultProtection){
-		orders.Aggregate(o_groupBy);
+	orders.Aggregate(o_groupBy);
+
+	if (printResult){
+		if(resultProtection){
+			orders.RevealAnnotToOwner();
+			orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
+		}
+		else{
+			orders.RevealAnnotToOwner();
+			orders.Print();
+		}
 	}
-	orders.RevealAnnotToOwner();
-	if (printResult)
-		orders.Print();
 }
 
 int main(int argc, char **)
