@@ -273,7 +273,7 @@ void run_Q3(DataSize ds, bool printResult, bool resultProtection)
 }
 
 // 运行查询的函数，用于Web服务器调用
-bool run_query(int role, int query_type, int data_size, bool result_protection, 
+bool execute_query(int role, int query_type, int data_size, bool result_protection, 
                const std::string& server_address, int server_port) {
     try {
         e_role user_role = (e_role)role;
@@ -343,7 +343,7 @@ void start_web_server(int port) {
         int server_port = std::stoi(json["server_port"]);
         
         // 运行查询
-        bool success = run_query(role, query_type, data_size, result_protection, 
+        bool success = execute_query(role, query_type, data_size, result_protection, 
                                 server_address, server_port);
         
         // 构建响应
