@@ -10,6 +10,7 @@
 #include "circuit/booleancircuits.h"
 #include <numeric>
 #include "RNG.h"
+#include "DP.h"
 #include <unordered_set>
 
 namespace SECYAN
@@ -213,7 +214,7 @@ namespace SECYAN
 		float f_value;
 		const int arrlen = sizeof(uint64_t) / sizeof(char);
 		char padded_str[arrlen + 1] = "";
-		double avg = 0;
+		vector<uint32_t> data;
 		for (uint32_t i = 0; i < m_RI.numRows && printed < limit_size; i++)
 		{
 			if (m_AI.knownByOwner && (m_Annot[i] == 0 && !showZeroAnnotedTuple || m_Tuples[i].IsDummy()))
@@ -251,14 +252,21 @@ namespace SECYAN
 				}
 			}
 			std::cout << (int)m_Annot[i] << std::endl;
-			
-			avg = avg + (m_Annot[i] - avg) / printed;
+			data.push_back(m_Annot[i]);
 		}
 		if (printed == 0){
 			std::cout << "Empty Relation!" << std::endl;
 		}
 		else{
-			std::cout << msg << " = " << avg << std::endl;
+			double avg = calculateAverage(data);
+			double data_range = calculateDataRange(data);
+			double sensitivity = data_range / data.size();
+			double noise = generateLaplaceNoise(sensitivity, 0.1);
+			
+			std::cout << "Printed " << printed << " tuples" << "Limited by " << limit_size << std::endl;
+			std::cout << msg << "'s original avg = " << avg << std::endl; 
+			std::cout << msg << "'s noise = " << noise << std::endl;
+			std::cout << msg << "'s dp avg = " << avg + noise << std::endl;
 		}
 		std::cout << std::endl;
 	}
