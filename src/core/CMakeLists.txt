@@ -9,6 +9,7 @@ add_library(secyan
     RNG.cpp
     party.cpp
     OT.cpp
+    DP.cpp
 )
 
 target_link_libraries(secyan INTERFACE
