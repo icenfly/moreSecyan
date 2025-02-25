@@ -214,7 +214,7 @@ namespace SECYAN
 		float f_value;
 		const int arrlen = sizeof(uint64_t) / sizeof(char);
 		char padded_str[arrlen + 1] = "";
-		std::vector<uint32_t> data;
+		std::vector<int> data;
 		for (uint32_t i = 0; i < m_RI.numRows && printed < limit_size; i++)
 		{
 			if (m_AI.knownByOwner && (m_Annot[i] == 0 && !showZeroAnnotedTuple || m_Tuples[i].IsDummy()))
@@ -252,7 +252,7 @@ namespace SECYAN
 				}
 			}
 			std::cout << (int)m_Annot[i] << std::endl;
-			data.push_back(m_Annot[i]);
+			data.push_back((int)m_Annot[i]);
 		}
 		if (printed == 0){
 			std::cout << "Empty Relation!" << std::endl;
