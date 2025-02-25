@@ -20,6 +20,8 @@ add_executable(mpsi
     multipartypsi.cpp
 )
 
+add_executable(web_frontend web_frontend.cpp)
+
 target_link_libraries(benchmark 
     PUBLIC secyan
     PUBLIC ENCRYPTO_utils::encrypto_utils
@@ -36,3 +38,5 @@ target_link_libraries(psi
 
 target_link_libraries(mpsi
     PUBLIC secyan)
+
+target_link_libraries(web_frontend secyan pthread)
