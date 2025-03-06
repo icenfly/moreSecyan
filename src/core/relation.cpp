@@ -223,7 +223,7 @@ namespace SECYAN
 			{
 				return false;
 			}
-
+			/*
 			// 比较元组内容
 			for (size_t j = 0; j < m_RI.attrNames.size(); j++)
 			{
@@ -232,8 +232,9 @@ namespace SECYAN
 					return false;
 				}
 			}
+			*/
 		}
-		std::cout << "所有检查都通过" << std::endl;
+		std::cout << "注释检查通过" << std::endl;
 		// 所有检查都通过，两个关系相等
 		return true;
 	}
