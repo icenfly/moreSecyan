@@ -172,11 +172,8 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 	s_orders.Aggregate(o_groupBy);
 
 	if(printResult){
-		c_orders.RevealTuples();
 		c_orders.RevealAnnotToOwner();
-		s_orders.RevealTuples();
 		s_orders.RevealAnnotToOwner();
-
 		std::vector<uint64_t> packedTuples;
 		if (c_orders.IsDummy())
 		{
