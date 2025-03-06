@@ -202,20 +202,22 @@ namespace SECYAN
 		{
 			return false;
 		}
-
+		cout << "基本属性匹配" << endl;
 		// 检查属性名称和类型是否匹配
 		for (size_t i = 0; i < m_RI.attrNames.size(); i++)
 		{
+			cout << i << " "; 
 			if (m_RI.attrNames[i] != child.m_RI.attrNames[i] || 
 				m_RI.attrTypes[i] != child.m_RI.attrTypes[i])
 			{
 				return false;
 			}
 		}
-
+		cout << "属性名称和类型匹配" << endl;
 		// 比较每一行的数据和注释
 		for (size_t i = 0; i < m_RI.numRows; i++)
 		{
+			cout << i << " "; 
 			// 比较注释
 			if (m_Annot[i] != child.m_Annot[i])
 			{
@@ -231,7 +233,7 @@ namespace SECYAN
 				}
 			}
 		}
-
+		cout << "所有检查都通过" << endl;
 		// 所有检查都通过，两个关系相等
 		return true;
 	}
