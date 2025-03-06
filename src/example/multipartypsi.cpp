@@ -176,6 +176,25 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 		c_orders.RevealAnnotToOwner();
 		s_orders.RevealTuples();
 		s_orders.RevealAnnotToOwner();
+
+		std::vector<uint64_t> packedTuples;
+		if (c_orders.IsDummy())
+		{
+			packedTuples = s_orders.PackTuples();
+			gParty.Send(packedTuples);
+		}
+		else
+		{
+			gParty.Recv(packedTuples);
+			std::vector<uint64_t> c_packedTuples = c_orders.PackTuples();
+			for (uint32_t i = 0; i < c_packedTuples.size(); i++)
+			{
+				if (c_packedTuples[i] != packedTuples[i])
+				{
+					cout << "Result verification failed! Abort!" << endl;
+				}
+			}
+		}
 		if (true){
 			if(resultProtection){
 				cout << "c_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
