@@ -216,14 +216,6 @@ namespace SECYAN
 		// 比较每一行的数据和注释
 		for (size_t i = 0; i < m_RI.numRows; i++)
 		{
-			// 跳过虚拟元组
-			if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
-			{
-				if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
-					return false;
-				continue;
-			}
-
 			// 比较注释
 			if (m_Annot[i] != child.m_Annot[i])
 			{
