@@ -143,6 +143,7 @@ namespace SECYAN
 		void PrintTableWithoutRevealing(const char *msg = NULL, int limit_size = 100);
 		void Print_Avg_ResultProtection(const char *msg = NULL, int limit_size = 10, bool showZeroAnnotedTuple = false);
 		bool Equal(Relation &child);
+		std::vector<uint64_t> PackTuples();
 
 	private:
 		RelationInfo m_RI;
@@ -157,7 +158,7 @@ namespace SECYAN
 		void OblivSemiJoin(Relation &child, std::vector<std::string> &parentAttrNames, std::vector<std::string> &childAttrNames);
 		void OblivAnnotOrAgg();
 		void OwnerAnnotAddAgg();
-		std::vector<uint64_t> PackTuples();
+		//std::vector<uint64_t> PackTuples();
 	};
 
 } // namespace SECYAN
