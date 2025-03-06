@@ -123,40 +123,40 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 	auto s_cust_ri = GetRI(CUSTOMER, Q3, ds, SERVER);
 	Relation::AnnotInfo s_cust_ai = {true, true};
 	Relation s_customer(s_cust_ri, s_cust_ai);
-	auto filePath = GetFilePath(CUSTOMER, ds);
-	s_customer.LoadData(filePath.c_str(), "q3_annot");
+	auto s_filePath = GetFilePath(CUSTOMER, ds);
+	s_customer.LoadData(s_filePath.c_str(), "q3_annot");
 
 	auto c_cust_ri = GetRI(CUSTOMER, Q3, ds, CLIENT);
 	Relation::AnnotInfo c_cust_ai = {true, true};
 	Relation c_customer(c_cust_ri, c_cust_ai);
-	auto filePath = GetFilePath(CUSTOMER, ds);
-	c_customer.LoadData(filePath.c_str(), "q3_annot");
+	auto c_filePath = GetFilePath(CUSTOMER, ds);
+	c_customer.LoadData(c_filePath.c_str(), "q3_annot");
 
 	auto c_orders_ri = GetRI(ORDERS, Q3, ds, CLIENT);
 	Relation::AnnotInfo c_orders_ai = {true, true};
 	Relation c_orders(c_orders_ri, c_orders_ai);
-	filePath = GetFilePath(ORDERS, ds);
-	c_orders.LoadData(filePath.c_str(), "q3_annot");
+	auto c_filePath = GetFilePath(ORDERS, ds);
+	c_orders.LoadData(c_filePath.c_str(), "q3_annot");
 	//orders.Print();
 
 	auto s_orders_ri = GetRI(ORDERS, Q3, ds, SERVER);
 	Relation::AnnotInfo s_orders_ai = {true, true};
 	Relation s_orders(s_orders_ri, s_orders_ai);
-	filePath = GetFilePath(ORDERS, ds);
-	s_orders.LoadData(filePath.c_str(), "q3_annot");
+	auto s_filePath = GetFilePath(ORDERS, ds);
+	s_orders.LoadData(s_filePath.c_str(), "q3_annot");
 
 	auto s_lineitem_ri = GetRI(LINEITEM, Q3, ds, SERVER);
 	Relation::AnnotInfo s_lineitem_ai = {false, true};
 	Relation s_lineitem(s_lineitem_ri, s_lineitem_ai);
-	filePath = GetFilePath(LINEITEM, ds);
-	s_lineitem.LoadData(filePath.c_str(), "q3_annot");
+	auto s_filePath = GetFilePath(LINEITEM, ds);
+	s_lineitem.LoadData(s_filePath.c_str(), "q3_annot");
 	s_lineitem.Aggregate();
 
 	auto c_lineitem_ri = GetRI(LINEITEM, Q3, ds, CLIENT);
 	Relation::AnnotInfo c_lineitem_ai = {false, true};
 	Relation c_lineitem(c_lineitem_ri, c_lineitem_ai);
-	filePath = GetFilePath(LINEITEM, ds);
-	c_lineitem.LoadData(filePath.c_str(), "q3_annot");
+	auto c_filePath = GetFilePath(LINEITEM, ds);
+	c_lineitem.LoadData(c_filePath.c_str(), "q3_annot");
 	c_lineitem.Aggregate();
 
 	c_orders.SemiJoin(s_customer, "o_custkey", "c_custkey");
