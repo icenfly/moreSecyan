@@ -207,7 +207,6 @@ namespace SECYAN
 		{
 			return false;
 		}
-		std::cout << "基本属性匹配" << std::endl;
 		// 检查属性名称和类型是否匹配
 		for (size_t i = 0; i < m_RI.attrNames.size(); i++)
 		{
@@ -218,111 +217,6 @@ namespace SECYAN
 				return false;
 			}
 		}
-		std::cout << "属性名称和类型匹配" << std::endl;
-		// 比较每一行的数据和注释
-		for (size_t i = 0; i < m_RI.numRows; i++)
-		{
-			// 检查两个关系中的元组是否都不是 dummy
-			if (m_AI.knownByOwner && ((m_Annot[i] == 0 && m_Tuples[i].IsDummy()) || (child.m_Annot[i] == 0 && child.m_Tuples[i].IsDummy())))
-				continue;
-			std::cout << i << " " << std::endl; 
-			// 比较注释
-			if (m_Annot[i] != child.m_Annot[i])
-			{
-				return false;
-			}
-			uint64_t i_value, year, month, day;
-			uint64_t c_i_value, c_year, c_month, c_day;
-			int child_value, my_value;
-			float f_value, c_f_value;
-			const int arrlen = sizeof(uint64_t) / sizeof(char);
-			char padded_str[arrlen + 1] = "";
-			char c_padded_str[arrlen + 1] = "";
-			// 比较元组内容
-			for (size_t j = 0; j < m_RI.attrNames.size(); j++)
-			{
-				std::cout << j << " "; 
-				switch (m_RI.attrTypes[j])
-				{
-				case DataType::INT:
-					// 检查元组是否为 dummy
-					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
-					{
-						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
-							return false;
-						break;
-					}
-					child_value = (int)child.m_Tuples[i][j];
-					my_value = (int)m_Tuples[i][j];
-					if (child_value != my_value)
-					{
-						return false;
-					}
-					break;
-				case DataType::STRING:
-					// 检查元组是否为 dummy
-					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
-					{
-						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
-							return false;
-						break;
-					}
-					*(uint64_t *)c_padded_str = child.m_Tuples[i][j];
-						
-					*(uint64_t *)padded_str = m_Tuples[i][j];
-						
-					if (strcmp(c_padded_str, padded_str) != 0)
-					{
-						return false;
-					}
-					break;
-				case DataType::DATE:
-					// 检查元组是否为 dummy
-					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
-					{
-						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
-							return false;
-						break;
-					}
-					i_value = m_Tuples[i][j];
-					day = i_value % 100;
-					i_value /= 100;
-					month = i_value % 100;
-					i_value /= 100;
-					year = i_value;
-
-					c_i_value = child.m_Tuples[i][j];
-					c_day = c_i_value % 100;
-					c_i_value /= 100;
-					c_month = c_i_value % 100;
-					c_i_value /= 100;
-					c_year = c_i_value;
-
-					if (c_year != year || c_month != month || c_day != day)
-					{
-						return false;
-					}
-					break;
-				case DataType::DECIMAL:
-					// 检查元组是否为 dummy
-					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
-					{
-						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
-							return false;
-						break;
-					}
-					f_value = (float)(int)m_Tuples[i][j] / 100;
-					c_f_value = (float)(int)child.m_Tuples[i][j] / 100;
-					if (f_value != c_f_value)
-					{
-						return false;
-					}
-					break;
-				}
-			}
-		}
-		std::cout << "注释检查通过" << std::endl;
-		// 所有检查都通过，两个关系相等
 		return true;
 	}
 
