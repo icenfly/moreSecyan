@@ -142,6 +142,7 @@ namespace SECYAN
 		// For debug test only
 		void PrintTableWithoutRevealing(const char *msg = NULL, int limit_size = 100);
 		void Print_Avg_ResultProtection(const char *msg = NULL, int limit_size = 10, bool showZeroAnnotedTuple = false);
+		bool Equal(Relation &child);
 
 	private:
 		RelationInfo m_RI;

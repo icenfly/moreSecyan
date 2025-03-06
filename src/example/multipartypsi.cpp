@@ -116,6 +116,79 @@ void run_Q3(DataSize ds, bool printResult, bool resultProtection)
 	}
 }
 
+void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
+{
+	vector<string> o_groupBy = {"o_orderkey", "o_orderdate", "o_shippriority"};
+
+	auto cust_ri = GetRI(CUSTOMER, Q3, ds, SERVER);
+	Relation::AnnotInfo cust_ai = {true, true};
+	Relation s_customer(cust_ri, cust_ai);
+	auto filePath = GetFilePath(CUSTOMER, ds);
+	s_customer.LoadData(filePath.c_str(), "q3_annot");
+
+	auto cust_ri = GetRI(CUSTOMER, Q3, ds, CLIENT);
+	Relation::AnnotInfo cust_ai = {true, true};
+	Relation c_customer(cust_ri, cust_ai);
+	auto filePath = GetFilePath(CUSTOMER, ds);
+	c_customer.LoadData(filePath.c_str(), "q3_annot");
+
+	auto orders_ri = GetRI(ORDERS, Q3, ds, CLIENT);
+	Relation::AnnotInfo orders_ai = {true, true};
+	Relation c_orders(orders_ri, orders_ai);
+	filePath = GetFilePath(ORDERS, ds);
+	c_orders.LoadData(filePath.c_str(), "q3_annot");
+	//orders.Print();
+
+	auto orders_ri = GetRI(ORDERS, Q3, ds, SERVER);
+	Relation::AnnotInfo orders_ai = {true, true};
+	Relation s_orders(orders_ri, orders_ai);
+	filePath = GetFilePath(ORDERS, ds);
+	s_orders.LoadData(filePath.c_str(), "q3_annot");
+
+	auto lineitem_ri = GetRI(LINEITEM, Q3, ds, SERVER);
+	Relation::AnnotInfo lineitem_ai = {false, true};
+	Relation s_lineitem(lineitem_ri, lineitem_ai);
+	filePath = GetFilePath(LINEITEM, ds);
+	s_lineitem.LoadData(filePath.c_str(), "q3_annot");
+	s_lineitem.Aggregate();
+
+	auto lineitem_ri = GetRI(LINEITEM, Q3, ds, CLIENT);
+	Relation::AnnotInfo lineitem_ai = {false, true};
+	Relation c_lineitem(lineitem_ri, lineitem_ai);
+	filePath = GetFilePath(LINEITEM, ds);
+	c_lineitem.LoadData(filePath.c_str(), "q3_annot");
+	c_lineitem.Aggregate();
+
+	c_orders.SemiJoin(s_customer, "o_custkey", "c_custkey");
+
+	c_orders.SemiJoin(s_lineitem, "o_orderkey", "l_orderkey");
+
+	c_orders.Aggregate(o_groupBy);
+
+	s_orders.SemiJoin(c_customer, "o_custkey", "c_custkey");
+
+	s_orders.SemiJoin(c_lineitem, "o_orderkey", "l_orderkey");
+
+	s_orders.Aggregate(o_groupBy);
+
+	if(printResult){
+		c_orders.RevealAnnotToOwner();
+		s_orders.RevealAnnotToOwner();
+		if (c_orders.Equal(s_orders)){
+			if(resultProtection){
+				c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
+			}
+			else{
+				c_orders.Print();
+			}
+			cout << "Result Verification passed!" << endl;
+		}
+		else{
+			cout << "Result Verification failed! Abort printResult!" << endl;
+		}
+	}
+}
+
 int main(int argc, char **)
 {
     int irole, iqn, ids;
@@ -160,9 +233,18 @@ int main(int argc, char **)
 	cout << "Do you want to enable result protection? [0. No, 1. Yes]: ";
 	cin >> rp;
 
+	bool de = false;
+	cout << "Do you want to enable dual execution? [0. No, 1. Yes]: ";
+	cin >> de;
+
     cout << "Start running query..." << endl;
     gParty.Tick("Running time");
-	run_Q3(ds, true, rp);
+	if(de){
+		run_Q3_DE(ds, true, rp);
+	}
+	else{
+		run_Q3(ds, true, rp);
+	}
     gParty.Tick("Running time");
     auto cost = gParty.GetCommCostAndResetStats();
     cout << "Communication cost: " << cost / 1024 / 1024.0 << " MB" << endl;

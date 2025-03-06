@@ -194,6 +194,63 @@ namespace SECYAN
 		std::cout << std::endl;
 	}
 
+	bool Relation::Equal(Relation &child)
+	{
+		// 如果当前关系是虚拟的，或者子关系是虚拟的，则无法比较
+		if (IsDummy() || child.IsDummy())
+		{
+			std::cout << "Cannot compare with dummy relation!" << std::endl;
+			return false;
+		}
+
+		// 检查两个关系的基本属性是否匹配
+		if (m_RI.attrNames.size() != child.m_RI.attrNames.size() || 
+			m_RI.numRows != child.m_RI.numRows)
+		{
+			return false;
+		}
+
+		// 检查属性名称和类型是否匹配
+		for (size_t i = 0; i < m_RI.attrNames.size(); i++)
+		{
+			if (m_RI.attrNames[i] != child.m_RI.attrNames[i] || 
+				m_RI.attrTypes[i] != child.m_RI.attrTypes[i])
+			{
+				return false;
+			}
+		}
+
+		// 比较每一行的数据和注释
+		for (size_t i = 0; i < m_RI.numRows; i++)
+		{
+			// 跳过虚拟元组
+			if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
+			{
+				if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
+					return false;
+				continue;
+			}
+
+			// 比较注释
+			if (m_Annot[i] != child.m_Annot[i])
+			{
+				return false;
+			}
+
+			// 比较元组内容
+			for (size_t j = 0; j < m_RI.attrNames.size(); j++)
+			{
+				if (m_Tuples[i][j] != child.m_Tuples[i][j])
+				{
+					return false;
+				}
+			}
+		}
+
+		// 所有检查都通过，两个关系相等
+		return true;
+	}
+
 	void Relation::Print_Avg_ResultProtection(const char *msg, int limit_size, bool showZeroAnnotedTuple)
 	{
 		bool dummy = IsDummy();
