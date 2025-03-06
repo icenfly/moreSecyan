@@ -201,7 +201,7 @@ namespace SECYAN
 		{
 			std::cout << "Dummy Relation!" << std::endl;
 			std::cout << std::endl;
-			return false;
+			return true;
 		}
 		// 检查两个关系的基本属性是否匹配
 		if (m_RI.attrNames.size() != child.m_RI.attrNames.size() || 

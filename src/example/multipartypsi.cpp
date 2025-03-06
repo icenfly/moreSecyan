@@ -176,16 +176,10 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 		s_orders.RevealAnnotToOwner();
 		if (c_orders.Equal(s_orders)){
 			if(resultProtection){
-				cout << "Dual Execution: orders as client: " << endl;
 				c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
-				cout << "Dual Execution: orders as server: " << endl;
-				s_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
 			}
 			else{
-				cout << "Dual Execution: orders as client: " << endl;
 				c_orders.Print();
-				cout << "Dual Execution: orders as server: " << endl;
-				s_orders.Print();
 			}
 			cout << "Result Verification passed!" << endl;
 		}
