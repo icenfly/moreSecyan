@@ -196,13 +196,6 @@ namespace SECYAN
 
 	bool Relation::Equal(Relation &child)
 	{
-		// 如果当前关系是虚拟的，或者子关系是虚拟的，则无法比较
-		if (IsDummy() || child.IsDummy())
-		{
-			std::cout << "Cannot compare with dummy relation!" << std::endl;
-			return false;
-		}
-
 		// 检查两个关系的基本属性是否匹配
 		if (m_RI.attrNames.size() != child.m_RI.attrNames.size() || 
 			m_RI.numRows != child.m_RI.numRows)
