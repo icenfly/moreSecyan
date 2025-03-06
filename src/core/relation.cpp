@@ -197,6 +197,12 @@ namespace SECYAN
 
 	bool Relation::Equal(Relation &child)
 	{
+		if (m_RI.owner != gParty.GetRole() && m_AI.knownByOwner)
+		{
+			std::cout << "Dummy Relation!" << std::endl;
+			std::cout << std::endl;
+			return false;
+		}
 		// 检查两个关系的基本属性是否匹配
 		if (m_RI.attrNames.size() != child.m_RI.attrNames.size() || 
 			m_RI.numRows != child.m_RI.numRows)
