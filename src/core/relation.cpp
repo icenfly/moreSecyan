@@ -12,6 +12,7 @@
 #include "RNG.h"
 #include "DP.h"
 #include <unordered_set>
+#include <cstring>
 
 namespace SECYAN
 {
@@ -217,22 +218,74 @@ namespace SECYAN
 		// 比较每一行的数据和注释
 		for (size_t i = 0; i < m_RI.numRows; i++)
 		{
-			std::cout << i << " "; 
+			if (m_AI.knownByOwner && (m_Annot[i] == 0 && !showZeroAnnotedTuple || m_Tuples[i].IsDummy()))
+				continue;
+			std::cout << i << " " << std::endl; 
 			// 比较注释
 			if (m_Annot[i] != child.m_Annot[i])
 			{
 				return false;
 			}
-			/*
+			uint64_t i_value, year, month, day;
+			uint64_t c_i_value, c_year, c_month, c_day;
+			float f_value, c_f_value;
+			const int arrlen = sizeof(uint64_t) / sizeof(char);
+			char padded_str[arrlen + 1] = "";
+			char c_padded_str[arrlen + 1] = "";
 			// 比较元组内容
 			for (size_t j = 0; j < m_RI.attrNames.size(); j++)
 			{
-				if (m_Tuples[i][j] != child.m_Tuples[i][j])
+				std::cout << j << " "; 
+				switch (m_RI.attrTypes[j])
 				{
-					return false;
+				case DataType::INT:
+					int child_value = (int)child.m_Tuples[i][j];
+					int my_value = (int)m_Tuples[i][j];
+					if (child_value != my_value)
+					{
+						return false;
+					}
+					break;
+				case DataType::STRING:
+					*(uint64_t *)c_padded_str = child.m_Tuples[i][j];
+						
+					*(uint64_t *)padded_str = m_Tuples[i][j];
+						
+					if (strcmp(c_padded_str, padded_str) != 0)
+					{
+						return false;
+					}
+					break;
+				case DataType::DATE:
+					i_value = m_Tuples[i][j];
+					day = i_value % 100;
+					i_value /= 100;
+					month = i_value % 100;
+					i_value /= 100;
+					year = i_value;
+
+					c_i_value = child.m_Tuples[i][j];
+					c_day = c_i_value % 100;
+					c_i_value /= 100;
+					c_month = c_i_value % 100;
+					c_i_value /= 100;
+					c_year = c_i_value;
+
+					if (c_year != year || c_month != month || c_day != day)
+					{
+						return false;
+					}
+					break;
+				case DataType::DECIMAL:
+					f_value = (float)(int)m_Tuples[i][j] / 100;
+					c_f_value = (float)(int)child.m_Tuples[i][j] / 100;
+					if (f_value != c_f_value)
+					{
+						return false;
+					}
+					break;
 				}
 			}
-			*/
 		}
 		std::cout << "注释检查通过" << std::endl;
 		// 所有检查都通过，两个关系相等
