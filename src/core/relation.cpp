@@ -199,8 +199,6 @@ namespace SECYAN
 	{
 		if (m_RI.owner != gParty.GetRole() && m_AI.knownByOwner)
 		{
-			std::cout << "Dummy Relation!" << std::endl;
-			std::cout << std::endl;
 			return true;
 		}
 		// 检查两个关系的基本属性是否匹配
@@ -224,7 +222,8 @@ namespace SECYAN
 		// 比较每一行的数据和注释
 		for (size_t i = 0; i < m_RI.numRows; i++)
 		{
-			if (m_AI.knownByOwner && (m_Annot[i] == 0 && m_Tuples[i].IsDummy()))
+			// 检查两个关系中的元组是否都不是 dummy
+			if (m_AI.knownByOwner && ((m_Annot[i] == 0 && m_Tuples[i].IsDummy()) || (child.m_Annot[i] == 0 && child.m_Tuples[i].IsDummy())))
 				continue;
 			std::cout << i << " " << std::endl; 
 			// 比较注释
@@ -246,6 +245,13 @@ namespace SECYAN
 				switch (m_RI.attrTypes[j])
 				{
 				case DataType::INT:
+					// 检查元组是否为 dummy
+					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
+					{
+						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
+							return false;
+						break;
+					}
 					child_value = (int)child.m_Tuples[i][j];
 					my_value = (int)m_Tuples[i][j];
 					if (child_value != my_value)
@@ -254,6 +260,13 @@ namespace SECYAN
 					}
 					break;
 				case DataType::STRING:
+					// 检查元组是否为 dummy
+					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
+					{
+						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
+							return false;
+						break;
+					}
 					*(uint64_t *)c_padded_str = child.m_Tuples[i][j];
 						
 					*(uint64_t *)padded_str = m_Tuples[i][j];
@@ -264,6 +277,13 @@ namespace SECYAN
 					}
 					break;
 				case DataType::DATE:
+					// 检查元组是否为 dummy
+					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
+					{
+						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
+							return false;
+						break;
+					}
 					i_value = m_Tuples[i][j];
 					day = i_value % 100;
 					i_value /= 100;
@@ -284,6 +304,13 @@ namespace SECYAN
 					}
 					break;
 				case DataType::DECIMAL:
+					// 检查元组是否为 dummy
+					if (m_Tuples[i].IsDummy() || child.m_Tuples[i].IsDummy())
+					{
+						if (m_Tuples[i].IsDummy() != child.m_Tuples[i].IsDummy())
+							return false;
+						break;
+					}
 					f_value = (float)(int)m_Tuples[i][j] / 100;
 					c_f_value = (float)(int)child.m_Tuples[i][j] / 100;
 					if (f_value != c_f_value)
