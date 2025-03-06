@@ -210,13 +210,58 @@ namespace SECYAN
 		// 检查属性名称和类型是否匹配
 		for (size_t i = 0; i < m_RI.attrNames.size(); i++)
 		{
-			std::cout << i << " "; 
 			if (m_RI.attrNames[i] != child.m_RI.attrNames[i] || 
 				m_RI.attrTypes[i] != child.m_RI.attrTypes[i])
 			{
 				return false;
 			}
 		}
+		uint64_t i_value, year, month, day;
+		uint32_t out, printed = 0;
+		float f_value;
+		const int arrlen = sizeof(uint64_t) / sizeof(char);
+		char padded_str[arrlen + 1] = "";
+		for (uint32_t i = 0; i < child.m_RI.numRows && printed < limit_size; i++)
+		{
+			if (child.m_AI.knownByOwner && (child.m_Annot[i] == 0 && !showZeroAnnotedTuple || child.m_Tuples[i].IsDummy()))
+				continue;
+			printed++;
+			std::cout << i + 1 << '\t';
+			if (!dummy)
+			{
+				for (uint32_t j = 0; j < child.m_RI.attrNames.size(); ++j)
+				{
+					switch (child.m_RI.attrTypes[j])
+					{
+					case DataType::INT:
+						std::cout << (int)child.m_Tuples[i][j];
+						break;
+					case DataType::STRING:
+						*(uint64_t *)padded_str = child.m_Tuples[i][j];
+						std::cout << padded_str; // for simplicity
+						break;
+					case DataType::DATE:
+						i_value = child.m_Tuples[i][j];
+						day = i_value % 100;
+						i_value /= 100;
+						month = i_value % 100;
+						i_value /= 100;
+						year = i_value;
+						std::cout << year << '-' << std::setfill('0') << std::setw(2) << month << '-' << std::setfill('0') << std::setw(2) << day;
+						break;
+					case DataType::DECIMAL:
+						f_value = (float)(int)child.m_Tuples[i][j] / 100;
+						std::cout << std::setprecision(2) << std::fixed << f_value;
+						break;
+					}
+					std::cout << '\t';
+				}
+			}
+			std::cout << (int)child.m_Annot[i] << std::endl;
+		}
+		if (printed == 0)
+			std::cout << "Empty Relation!" << std::endl;
+		std::cout << std::endl;
 		return true;
 	}
 

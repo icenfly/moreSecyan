@@ -181,10 +181,10 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 			else{
 				c_orders.Print();
 			}
-			cout << "Result Verification passed!" << endl;
+			cout << "Result verification passed!" << endl;
 		}
 		else{
-			cout << "Result Verification failed! Abort printResult!" << endl;
+			cout << "Result verification failed! Abort!" << endl;
 		}
 	}
 }
