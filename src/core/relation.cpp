@@ -224,8 +224,8 @@ namespace SECYAN
 		char padded_str[arrlen + 1] = "";
 		for (uint32_t i = 0; i < child.m_RI.numRows; i++)
 		{
-			if (child.m_AI.knownByOwner && (child.m_Annot[i] == 0 && child.m_Tuples[i].IsDummy()))
-				continue;
+			//if (child.m_AI.knownByOwner && (child.m_Annot[i] == 0 && child.m_Tuples[i].IsDummy()))
+			//	continue;
 			printed++;
 			std::cout << i + 1 << '\t';
 			if (!dummy)
