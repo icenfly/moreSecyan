@@ -208,7 +208,6 @@ namespace SECYAN
 		{
 			return false;
 		}
-		std::cout << "child.m_RI.numRows: " << child.m_RI.numRows << std::endl;
 		// 检查属性名称和类型是否匹配
 		for (size_t i = 0; i < m_RI.attrNames.size(); i++)
 		{
@@ -217,24 +216,21 @@ namespace SECYAN
 			{
 				return false;
 			}
-			std::cout << "child.m_RI.attrNames[i]: " << child.m_RI.attrNames[i] << std::endl;
-			std::cout << "child.m_RI.attrTypes[i]: " << child.m_RI.attrTypes[i] << std::endl;
 		}
-		uint64_t i_value, year, month, day;
-		uint32_t out, printed = 0;
-		float f_value;
-		const int arrlen = sizeof(uint64_t) / sizeof(char);
-		char padded_str[arrlen + 1] = "";
-		for (uint32_t i = 0; i < child.m_RI.numRows; i++)
+
+		std::vector<uint64_t> packedTuples;
+		if (dummy)
 		{
-			//if (child.m_AI.knownByOwner && (child.m_Annot[i] == 0 && child.m_Tuples[i].IsDummy()))
-				//continue;
-			printed++;
-			std::cout << i + 1 << '\t';
-			
-			std::cout << (int)child.m_Annot[i] << std::endl;
+			packedTuples = PackTuples();
+			gParty.Send(packedTuples);
 		}
-		std::cout << std::endl;
+		else
+		{
+			gParty.Recv(packedTuples);
+			for (uint32_t i = 0; i < packedTuples.size(); i++)
+				cout << packedTuples[i] << endl;
+		}
+		
 		return true;
 	}
 
