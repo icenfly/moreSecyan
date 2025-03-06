@@ -232,7 +232,7 @@ namespace SECYAN
 			printed++;
 			std::cout << i + 1 << '\t';
 			
-			std::cout << (int)m_Annot[i] << std::endl;
+			std::cout << (int)child.m_Annot[i] << std::endl;
 		}
 		std::cout << std::endl;
 		return true;
