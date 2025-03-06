@@ -230,7 +230,7 @@ namespace SECYAN
 			std::cout << i + 1 << '\t';
 			if (!dummy)
 			{
-				for (uint32_t j = 0; j < child.m_RI.attrNames.size(); ++j)
+				for (uint32_t j = 0; j < m_RI.attrNames.size(); ++j)
 				{
 					std::cout << "child relation: " << std::endl;
 					switch (child.m_RI.attrTypes[j])
