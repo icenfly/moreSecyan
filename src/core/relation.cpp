@@ -217,19 +217,6 @@ namespace SECYAN
 				return false;
 			}
 		}
-
-		std::vector<uint64_t> packedTuples;
-		if (dummy)
-		{
-			packedTuples = PackTuples();
-			gParty.Send(packedTuples);
-		}
-		else
-		{
-			gParty.Recv(packedTuples);
-			for (uint32_t i = 0; i < packedTuples.size(); i++)
-				//std::cout << packedTuples[i] << std::endl;
-		}
 		
 		return true;
 	}

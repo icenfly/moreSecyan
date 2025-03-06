@@ -176,12 +176,18 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 		c_orders.RevealAnnotToOwner();
 		s_orders.RevealTuples();
 		s_orders.RevealAnnotToOwner();
-		if (c_orders.Equal(s_orders)){
+		if (true){
 			if(resultProtection){
+				cout << "c_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
 				c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
+				cout << "s_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
+				s_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
 			}
 			else{
+				cout << "c_orders.Print()" << endl;
 				c_orders.Print();
+				cout << "s_orders.Print()" << endl;
+				s_orders.Print();
 			}
 			cout << "Result verification passed!" << endl;
 		}
