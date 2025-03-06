@@ -174,6 +174,7 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 	if(printResult){
 		c_orders.RevealAnnotToOwner();
 		s_orders.RevealAnnotToOwner();
+		bool verified = true;
 		std::vector<uint64_t> packedTuples;
 		if (c_orders.IsDummy())
 		{
@@ -189,10 +190,12 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 				if (c_packedTuples[i] != packedTuples[i])
 				{
 					cout << "Result verification failed! Abort!" << endl;
+					verified = false;
+					break;
 				}
 			}
 		}
-		if (true){
+		if (verified){
 			if(resultProtection){
 				cout << "c_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
 				c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
@@ -206,9 +209,6 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 				s_orders.Print();
 			}
 			cout << "Result verification passed!" << endl;
-		}
-		else{
-			cout << "Result verification failed! Abort!" << endl;
 		}
 	}
 }
