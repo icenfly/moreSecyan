@@ -218,7 +218,7 @@ namespace SECYAN
 		// 比较每一行的数据和注释
 		for (size_t i = 0; i < m_RI.numRows; i++)
 		{
-			if (m_AI.knownByOwner && (m_Annot[i] == 0 && !showZeroAnnotedTuple || m_Tuples[i].IsDummy()))
+			if (m_AI.knownByOwner && (m_Annot[i] == 0 && m_Tuples[i].IsDummy()))
 				continue;
 			std::cout << i << " " << std::endl; 
 			// 比较注释
@@ -228,6 +228,7 @@ namespace SECYAN
 			}
 			uint64_t i_value, year, month, day;
 			uint64_t c_i_value, c_year, c_month, c_day;
+			int child_value, my_value;
 			float f_value, c_f_value;
 			const int arrlen = sizeof(uint64_t) / sizeof(char);
 			char padded_str[arrlen + 1] = "";
@@ -239,8 +240,8 @@ namespace SECYAN
 				switch (m_RI.attrTypes[j])
 				{
 				case DataType::INT:
-					int child_value = (int)child.m_Tuples[i][j];
-					int my_value = (int)m_Tuples[i][j];
+					child_value = (int)child.m_Tuples[i][j];
+					my_value = (int)m_Tuples[i][j];
 					if (child_value != my_value)
 					{
 						return false;
