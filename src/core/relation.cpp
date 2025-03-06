@@ -197,6 +197,7 @@ namespace SECYAN
 
 	bool Relation::Equal(Relation &child)
 	{
+		bool dummy = IsDummy();
 		if (m_RI.owner != gParty.GetRole() && m_AI.knownByOwner)
 		{
 			return true;
@@ -221,9 +222,9 @@ namespace SECYAN
 		float f_value;
 		const int arrlen = sizeof(uint64_t) / sizeof(char);
 		char padded_str[arrlen + 1] = "";
-		for (uint32_t i = 0; i < child.m_RI.numRows && printed < limit_size; i++)
+		for (uint32_t i = 0; i < child.m_RI.numRows; i++)
 		{
-			if (child.m_AI.knownByOwner && (child.m_Annot[i] == 0 && !showZeroAnnotedTuple || child.m_Tuples[i].IsDummy()))
+			if (child.m_AI.knownByOwner && (child.m_Annot[i] == 0 && child.m_Tuples[i].IsDummy()))
 				continue;
 			printed++;
 			std::cout << i + 1 << '\t';
