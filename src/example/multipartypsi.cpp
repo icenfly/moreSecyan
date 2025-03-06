@@ -195,8 +195,7 @@ void run_Q3_DE(DataSize ds, bool printResult, bool resultProtection)
 				}
 			}
 		}
-		cout << "Result verification failed! Abort!" << endl;
-		if (false){
+		if (verified){
 			if(resultProtection){
 				cout << "c_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
 				c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
