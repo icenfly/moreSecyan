@@ -1,0 +1,26 @@
+Who are you? [0. Server, 1. Client]: 1
+Establishing connection... Finished!
+Which query to run? [0. Q3, 1. Q10, 2. Q18, 3. Q8, 4. Q9]: 0
+Which TPCH data size to use? [0. 1MB, 1. 3MB, 2. 10MB, 3. 33MB, 4. 100MB]: 2
+Do you want to enable result protection? [0. No, 1. Yes]: 1
+Start running query...
+row_num	o_orderkey	o_orderdate	o_shippriority	annotation
+95	359	1994-12-19	0	6159
+462	1830	1995-02-23	0	9900
+530	2114	1995-01-16	0	4466
+782	3110	1994-12-17	0	4498
+941	3749	1995-02-24	0	12958
+958	3814	1995-02-22	0	18494
+1111	4423	1995-02-17	0	406
+1240	4960	1995-02-26	0	15620
+1303	5191	1994-12-11	0	7391
+1505	6017	1995-01-31	0	9542
+Printed 10 tuples. (Limited by 10)
+AVG(orders.annotation)'s Original Avg = 8943.4
+AVG(orders.annotation)'s Noise = 921.551
+AVG(orders.annotation)'s Differentially Private Avg = 9864.95
+
+Running time: 6719ms
+Communication cost: 184.846 MB
+Finished!
+
