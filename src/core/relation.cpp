@@ -680,7 +680,7 @@ namespace SECYAN
 
 		auto secondPermutedIndices = psi.CuckooToAliceArray();
 		std::vector<uint32_t> indices(aliceRowNum);
-		for (uint32_t i = 0; i < aliceRowNum-1; i++)
+		for (uint32_t i = 0; i < aliceRowNum; i++)
 			indices[i] = secondPermutedIndices[firstPermutedIndices[i]];
 		
 		if(m_RI.owner == CLIENT){
