@@ -18,6 +18,7 @@ add_executable(psi
 
 add_executable(mpsi
     multipartypsi.cpp
+    TPCH.cpp
 )
 
 target_link_libraries(benchmark 
