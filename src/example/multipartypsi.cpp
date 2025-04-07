@@ -9,7 +9,7 @@
 
 using namespace std;
 using namespace SECYAN;
-function<run_query_m> query_funcs[QTOTAL] = {run_Q3_m, run_Q10_m, run_Q18_m, run_Q8_m, run_Q9_m};
+function<run_query_m> query_funcs_m[QTOTAL] = {run_Q3_m, run_Q10_m, run_Q18_m, run_Q8_m, run_Q9_m};
 
 int main(int argc, char **)
 {
@@ -61,7 +61,7 @@ int main(int argc, char **)
 
     cout << "Start running query..." << endl;
     gParty.Tick("Running time");
-	query_funcs[qn](ds, true, rp, de);
+	query_funcs_m[qn](ds, true, rp, de);
     gParty.Tick("Running time");
     auto cost = gParty.GetCommCostAndResetStats();
     cout << "Communication cost: " << cost / 1024 / 1024.0 << " MB" << endl;
