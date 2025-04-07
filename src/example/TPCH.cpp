@@ -64,6 +64,46 @@ inline std::string GetFilePath(RelationName rn, DataSize ds)
 	return datapath[ds] + filename[rn];
 }
 
+void run_Q3(DataSize ds, bool printResult)
+{
+	vector<string> o_groupBy = {"o_orderkey", "o_orderdate", "o_shippriority"};
+	auto cust_ri = GetRI(CUSTOMER, Q3, ds, SERVER);
+	Relation::AnnotInfo cust_ai = {true, true};
+	Relation customer(cust_ri, cust_ai);
+	auto filePath = GetFilePath(CUSTOMER, ds);
+	customer.LoadData(filePath.c_str(), "q3_annot");
+
+	auto orders_ri = GetRI(ORDERS, Q3, ds, CLIENT);
+	Relation::AnnotInfo orders_ai = {true, true};
+	Relation orders(orders_ri, orders_ai);
+	filePath = GetFilePath(ORDERS, ds);
+	orders.LoadData(filePath.c_str(), "q3_annot");
+	//orders.Print();
+
+	auto lineitem_ri = GetRI(LINEITEM, Q3, ds, SERVER);
+	Relation::AnnotInfo lineitem_ai = {false, true};
+	Relation lineitem(lineitem_ri, lineitem_ai);
+	filePath = GetFilePath(LINEITEM, ds);
+	lineitem.LoadData(filePath.c_str(), "q3_annot");
+	lineitem.Aggregate();
+
+	orders.SemiJoin(customer, "o_custkey", "c_custkey");
+	//orders.PrintTableWithoutRevealing("orders semijoin customer");
+	// PSI: 95.4267ms
+	// Two OEPs: 53.8459ms
+	// AnnotMul: 4.4265ms
+
+	orders.SemiJoin(lineitem, "o_orderkey", "l_orderkey");
+	//orders.PrintTableWithoutRevealing("orders semijoin lineitem");
+	// PSI: 162.877ms
+	// Two OEPs: 25.8395ms
+	// AnnotMul: 51.1201ms
+
+	orders.Aggregate(o_groupBy);
+	orders.RevealAnnotToOwner();
+	if (printResult)
+		orders.Print();
+}
 
 void run_Q3(DataSize ds, bool printResult, bool resultProtection, bool dualExecution)
 {
