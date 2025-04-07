@@ -680,8 +680,12 @@ namespace SECYAN
 
 		auto secondPermutedIndices = psi.CuckooToAliceArray();
 		std::vector<uint32_t> indices(aliceRowNum);
-		for (uint32_t i = 0; i < aliceRowNum; i++)
+		for (uint32_t i = 0; i < aliceRowNum-1; i++)
 			indices[i] = secondPermutedIndices[firstPermutedIndices[i]];
+		
+		if(m_RI.owner == CLIENT){
+		    std::sort(indices.begin(), indices.end());
+		}
 
 		// auto ac = gParty.GetCircuit(S_ARITH);
 		// auto in = ac->PutSharedSIMDINGate(bobpayload_mask.size(), bobpayload_mask.data(), 32);
@@ -804,7 +808,7 @@ namespace SECYAN
 		std::vector<uint64_t> packedTuples(numColumns * numRows);
 		for (uint32_t i = 0; i < numRows; i++)
 			for (uint32_t j = 0; j < numColumns; j++)
-				packedTuples[i * numColumns + j] = m_Tuples[i][j];
+			    packedTuples[i * numColumns + j] = m_Tuples[i][j];				
 		return packedTuples;
 	}
 
