@@ -461,16 +461,18 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			{
 				packedTuples = s_orders.PackTuples();
 				// Send the size of the vector first, followed by the packed tuples
-				uint32_t size = packedTuples.size();
-				gParty.Send(&size, 1);
+				std::vector<uint64_t> size_vec = {static_cast<uint64_t>(packedTuples.size())};
+				gParty.Send(size_vec);
 				gParty.Send(packedTuples);
 			}
 			else
 			{
 				// Receive the size first to check if structures match
-				uint32_t size;
-				gParty.Recv(&size, 1);
-				gParty.Recv(packedTuples, size);
+				std::vector<uint64_t> size_vec;
+				gParty.Recv(size_vec);
+				uint32_t size = static_cast<uint32_t>(size_vec[0]);
+				packedTuples.resize(size);  // Resize the vector before receiving
+				gParty.Recv(packedTuples);
 				
 				std::vector<uint64_t> c_packedTuples = c_orders.PackTuples();
 				
