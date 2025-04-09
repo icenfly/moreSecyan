@@ -456,11 +456,13 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			c_orders.RevealAnnotToOwner();
 			s_orders.RevealAnnotToOwner();
 			bool verified = true;
+			gParty.Reset();
 			if (gParty.GetRole() == CLIENT)
 			{
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
 				std::vector<uint64_t> filtered_packedTuples = c_orders_copy.PackTuples();
+				cout << "Client: Packed tuples size: " << filtered_packedTuples.size() << endl;
 				cout << "Client: First few values being sent: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
