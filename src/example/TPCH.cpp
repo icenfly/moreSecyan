@@ -462,20 +462,30 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 
 				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
-				cout << "Server: Sending " << filtered_packedTuples.size() << " tuples" << endl;
+				uint32_t numColumns = s_orders_copy.m_RI.attrNames.size();
+				cout << "Server: Sending " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
 				cout << "Server: First few values being sent: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
 				}
 				cout << endl;
 				
+				// Send number of columns first
+				gParty.Send(numColumns);
+				// Then send the packed tuples
 				gParty.Send(filtered_packedTuples);
 			}
 			if(!c_orders.IsDummy())
 			{	
+				// Receive number of columns first
+				uint32_t numColumns;
+				gParty.Recv(numColumns);
+				
+				// Then receive the packed tuples
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
-				cout << "Client: Received " << filtered_packedTuples.size() << " tuples" << endl;
+				
+				cout << "Client: Received " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
 				cout << "Client: First few values received: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
@@ -486,7 +496,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				c_orders_copy.RemoveZeroAnnotatedTuples();
 				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
 
-				cout << "Client: Local filtered tuples size: " << c_filtered_packedTuples.size() << endl;
+				cout << "Client: Local filtered tuples size: " << c_filtered_packedTuples.size() << " values (" << c_filtered_packedTuples.size()/c_orders_copy.m_RI.attrNames.size() << " tuples with " << c_orders_copy.m_RI.attrNames.size() << " columns each)" << endl;
 				cout << "Client: First few local values: ";
 				for(int i = 0; i < std::min(5, (int)c_filtered_packedTuples.size()); i++) {
 					cout << c_filtered_packedTuples[i] << " ";
