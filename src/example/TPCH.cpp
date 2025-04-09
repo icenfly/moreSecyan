@@ -470,14 +470,13 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				// Remove zero annotated tuples to match print behavior
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 				
-				// Now pack the filtered relation and combine with size
+				// Now pack the filtered relation
 				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
-				filtered_packedTuples.insert(filtered_packedTuples.begin(), filtered_packedTuples.size());
-				
+
 				// Send the combined size and tuples vector
 				gParty.Send(filtered_packedTuples);
 				
-				cout << "filtered_packedTuples.size() = " << filtered_packedTuples[0] << endl;
+				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
 			}
 			if(!c_orders.IsDummy())
 			{	
@@ -485,23 +484,19 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
 				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
-				cout << "filtered_packedTuples[0] = " << filtered_packedTuples[0] << endl;
-				uint32_t filtered_size = static_cast<uint32_t>(filtered_packedTuples[0]);
-				filtered_packedTuples.erase(filtered_packedTuples.begin());
-				
+
 				// Get client order tuples with zero-annotated tuples removed (same as Print behavior)
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
 				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
-				uint32_t c_filtered_size = static_cast<uint32_t>(c_filtered_packedTuples.size());
-				
-				cout << "c_filtered_packedTuples.size() = " << c_filtered_size << endl;
+
+				cout << "c_filtered_packedTuples.size() = " << c_filtered_packedTuples.size() << endl;
 				
 				// Verify size and content of filtered tuples (this matches print behavior)
-				if (c_filtered_size != filtered_size) {
+				if (c_filtered_packedTuples.size() != filtered_packedTuples.size()) {
 					cout << "Result verification failed! Dual Execution relations would have different structures." << endl;
-					cout << "Client filtered relation size: " << c_filtered_size << endl;
-					cout << "Server filtered relation size: " << filtered_size << endl;
+					cout << "Client filtered relation size: " << c_filtered_packedTuples.size() << endl;
+					cout << "Server filtered relation size: " << filtered_packedTuples.size() << endl;
 					verified = false;
 				} else {
 					// Compare content of what would be printed
