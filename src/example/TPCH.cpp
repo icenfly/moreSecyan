@@ -484,6 +484,8 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				// Receive the combined size and tuples vector
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
+				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
+				cout << "filtered_packedTuples[0] = " << filtered_packedTuples[0] << endl;
 				uint32_t filtered_size = static_cast<uint32_t>(filtered_packedTuples[0]);
 				filtered_packedTuples.erase(filtered_packedTuples.begin());
 				
