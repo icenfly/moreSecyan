@@ -458,7 +458,6 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			bool verified = true;
 			if (!s_orders.IsDummy())
 			{
-				packedTuples = s_orders.PackTuples();
 				Relation s_orders_copy = s_orders;
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 
