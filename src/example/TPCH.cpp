@@ -456,39 +456,27 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			c_orders.RevealAnnotToOwner();
 			s_orders.RevealAnnotToOwner();
 			bool verified = true;
-			std::vector<uint64_t> packedTuples;
 			if (!s_orders.IsDummy())
 			{
-				// Pack tuples from s_orders
 				packedTuples = s_orders.PackTuples();
-				std::vector<uint64_t> size_vec = {static_cast<uint64_t>(packedTuples.size())};
-				
-				// Create a special format to simulate what would be printed
-				// Copy s_orders and make a local version for sending
 				Relation s_orders_copy = s_orders;
-				
-				// Remove zero annotated tuples to match print behavior
 				s_orders_copy.RemoveZeroAnnotatedTuples();
-				
-				// Now pack the filtered relation
-				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
 
-				// Send the combined size and tuples vector
+				std::vector<uint32_t> filtered_packedTuples = s_orders_copy.PackTuples();
+
 				gParty.Send(filtered_packedTuples);
 				
 				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
 			}
 			if(!c_orders.IsDummy())
 			{	
-				// Receive the combined size and tuples vector
-				std::vector<uint64_t> filtered_packedTuples;
+				std::vector<uint32_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
 				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
 
-				// Get client order tuples with zero-annotated tuples removed (same as Print behavior)
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
-				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
+				std::vector<uint32_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
 
 				cout << "c_filtered_packedTuples.size() = " << c_filtered_packedTuples.size() << endl;
 				
