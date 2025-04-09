@@ -462,8 +462,9 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 
 				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
+				std::vector<uint64_t> size_vec = {static_cast<uint64_t>(filtered_packedTuples.size())};
 
-				gParty.Send(filtered_packedTuples);
+				gParty.Send(size_vec);
 				
 				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
 			}
@@ -472,6 +473,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
 				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
+				cout << "filtered_packedTuples[0] = " << filtered_packedTuples[0] << endl;
 
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
