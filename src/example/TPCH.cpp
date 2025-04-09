@@ -460,10 +460,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			{
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
-
 				std::vector<uint64_t> filtered_packedTuples = c_orders_copy.PackTuples();
-				uint32_t numColumns = c_orders_copy.m_RI.attrNames.size();
-				cout << "Client: Sending " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
 				cout << "Client: First few values being sent: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
@@ -478,8 +475,6 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				// Then receive the packed tuples
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
-				
-				cout << "Server: Received " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
 				cout << "Server: First few values received: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
@@ -489,8 +484,6 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				Relation s_orders_copy = s_orders;
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 				std::vector<uint64_t> s_filtered_packedTuples = s_orders_copy.PackTuples();
-
-				cout << "Server: Local filtered tuples size: " << s_filtered_packedTuples.size() << " values (" << s_filtered_packedTuples.size()/s_orders_copy.m_RI.attrNames.size() << " tuples with " << s_orders_copy.m_RI.attrNames.size() << " columns each)" << endl;
 				cout << "Server: First few local values: ";
 				for(int i = 0; i < std::min(5, (int)s_filtered_packedTuples.size()); i++) {
 					cout << s_filtered_packedTuples[i] << " ";
