@@ -56,3 +56,16 @@ make[2]: *** [src/example/CMakeFiles/mpsi.dir/build.make:113: src/example/mpsi] 
 make[1]: *** [CMakeFiles/Makefile2:833: src/example/CMakeFiles/mpsi.dir/all] Error 2
 make: *** [Makefile:136: all] Error 2
 
+
+Server: Sending 33 tuples
+Server: First few values being sent: 1092 19950304 48 1830 19950223 
+
+Client: Received 750 tuples
+Client: First few values received: 4294967297 4294967297 4294967297 4294967297 4294967297 
+Client: Local filtered tuples size: 33
+Client: First few local values: 1092 19950304 48 1830 19950223 
+Result verification failed! Dual Execution relations would have different structures.
+Client filtered relation size: 33
+Server filtered relation size: 750
+
+
