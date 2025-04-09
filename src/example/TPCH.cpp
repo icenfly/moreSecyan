@@ -1,6 +1,8 @@
 #include <vector>
 #include <string>
 #include "../core/relation.h"
+#include "circuit/circuit.h"
+#include "circuit/share.h"
 #include <iostream>
 #include <chrono>
 #include "TPCH.h"
@@ -456,21 +458,20 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			c_orders.RevealAnnotToOwner();
 			s_orders.RevealAnnotToOwner();
 			bool verified = true;
-			gParty.Reset();
 			if (gParty.GetRole() == CLIENT)
 			{
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
-				std::vector<uint64_t> filtered_packedTuples = c_orders_copy.PackTuples();
-				cout << "Client: Packed tuples size: " << filtered_packedTuples.size() << endl;
+				std::vector<uint64_t> send_filtered_packedTuples = c_orders_copy.PackTuples();
+				cout << "Client: Packed tuples size: " << send_filtered_packedTuples.size() << endl;
 				cout << "Client: First few values being sent: ";
-				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
-					cout << filtered_packedTuples[i] << " ";
+				for(int i = 0; i < std::min(5, (int)send_filtered_packedTuples.size()); i++) {
+					cout << send_filtered_packedTuples[i] << " ";
 				}
 				cout << endl;
 				
 				// Then send the packed tuples
-				gParty.Send(filtered_packedTuples);
+				gParty.Send(send_filtered_packedTuples);
 			}
 			else
 			{	
