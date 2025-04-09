@@ -457,7 +457,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			s_orders.RevealAnnotToOwner();
 			bool verified = true;
 			std::vector<uint64_t> packedTuples;
-			if (c_orders.IsDummy())
+			if (!s_orders.IsDummy())
 			{
 				packedTuples = s_orders.PackTuples();
 				// Send the size of the vector first, followed by the packed tuples
