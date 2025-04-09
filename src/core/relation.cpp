@@ -683,6 +683,7 @@ namespace SECYAN
 		for (uint32_t i = 0; i < aliceRowNum; i++)
 			indices[i] = secondPermutedIndices[firstPermutedIndices[i]];
 		/*
+		// Simulate malicious attack from Client
 		if(m_RI.owner == CLIENT){
 		    std::sort(indices.begin(), indices.end());
 		}

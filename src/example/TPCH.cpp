@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include "TPCH.h"
+#include "unistd.h"
 
 using namespace std;
 using namespace SECYAN;
@@ -455,20 +456,16 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 		s_orders.Aggregate(o_groupBy);
 
 		if(printResult){
+			c_orders.RevealAnnotToOwner();
+			s_orders.RevealAnnotToOwner();
 			bool verified = true;
+			Relation c_orders_copy = c_orders;
+			c_orders_copy.RemoveZeroAnnotatedTuples();
+			Relation s_orders_copy = s_orders;
+			s_orders_copy.RemoveZeroAnnotatedTuples();
 			if (gParty.GetRole() == CLIENT)
 			{
-				Relation c_orders_copy = c_orders;
-				c_orders_copy.RemoveZeroAnnotatedTuples();
 				vector<uint64_t> send_filtered_packedTuples = c_orders_copy.PackTuples();
-				cout << "Client: Packed tuples size: " << send_filtered_packedTuples.size() << endl;
-				cout << "Client: First few values being sent: ";
-				for(int i = 0; i < std::min(5, (int)send_filtered_packedTuples.size()); i++) {
-					cout << send_filtered_packedTuples[i] << " ";
-				}
-				cout << endl;
-				
-				// Then send the packed tuples
 				gParty.Send(send_filtered_packedTuples);
 			}
 			else
@@ -476,24 +473,11 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				// Then receive the packed tuples
 				vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
-				cout << "Server: First few values received: ";
-				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
-					cout << filtered_packedTuples[i] << " ";
-				}
-				cout << endl;
 
-				Relation s_orders_copy = s_orders;
-				s_orders_copy.RemoveZeroAnnotatedTuples();
 				vector<uint64_t> s_filtered_packedTuples = s_orders_copy.PackTuples();
-				cout << "Server: First few local values: ";
-				for(int i = 0; i < std::min(5, (int)s_filtered_packedTuples.size()); i++) {
-					cout << s_filtered_packedTuples[i] << " ";
-				}
-				cout << endl;
 				
-				// Verify size and content of filtered tuples (this matches print behavior)
 				if (s_filtered_packedTuples.size() != filtered_packedTuples.size()) {
-					cout << "Result verification failed! Dual Execution relations would have different structures." << endl;
+					cout << "Result verification failed! Dual Execution results have different structures." << endl;
 					cout << "Server filtered relation size: " << s_filtered_packedTuples.size() << endl;
 					cout << "Client filtered relation size: " << filtered_packedTuples.size() << endl;
 					verified = false;
@@ -501,7 +485,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 					// Compare content of what would be printed
 					for (uint32_t i = 0; i < s_filtered_packedTuples.size(); i++) {
 						if (s_filtered_packedTuples[i] != filtered_packedTuples[i]) {
-							cout << "Result verification failed! Dual Execution content would differ at position " << i << endl;
+							cout << "Result verification failed! Dual Execution results differ at position " << i << endl;
 							cout << "Server value: " << s_filtered_packedTuples[i] << endl;
 							cout << "Client value: " << filtered_packedTuples[i] << endl;
 							verified = false;
@@ -511,8 +495,6 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				}
 			}
 			if (verified){
-				c_orders.RevealAnnotToOwner();
-				s_orders.RevealAnnotToOwner();
 				if(resultProtection){
 					cout << "c_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
 					c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
