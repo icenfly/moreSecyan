@@ -464,6 +464,9 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				std::vector<uint64_t> size_vec = {static_cast<uint64_t>(packedTuples.size())};
 				gParty.Send(size_vec);
 				gParty.Send(packedTuples);
+				cout << "s_orders.PackTuples()" << endl;
+				cout << "packedTuples.size() = " << packedTuples.size() << endl;
+				cout << "packedTuples[0] = " << packedTuples[0] << endl;
 			}
 			if(!c_orders.IsDummy())
 			{
@@ -475,6 +478,10 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				gParty.Recv(packedTuples);
 				
 				std::vector<uint64_t> c_packedTuples = c_orders.PackTuples();
+
+				cout << "c_orders.PackTuples()" << endl;
+				cout << "c_packedTuples.size() = " << c_packedTuples.size() << endl;
+				cout << "c_packedTuples[0] = " << c_packedTuples[0] << endl;
 				
 				// Verify size matches first
 				if (c_packedTuples.size() != size) {
