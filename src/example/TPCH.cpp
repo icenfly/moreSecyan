@@ -456,66 +456,60 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			c_orders.RevealAnnotToOwner();
 			s_orders.RevealAnnotToOwner();
 			bool verified = true;
-			if (!s_orders.IsDummy())
+			if (gParty.GetRole() == CLIENT)
 			{
-				Relation s_orders_copy = s_orders;
-				s_orders_copy.RemoveZeroAnnotatedTuples();
+				Relation c_orders_copy = c_orders;
+				c_orders_copy.RemoveZeroAnnotatedTuples();
 
-				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
-				uint32_t numColumns = s_orders_copy.m_RI.attrNames.size();
-				cout << "Server: Sending " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
-				cout << "Server: First few values being sent: ";
+				std::vector<uint64_t> filtered_packedTuples = c_orders_copy.PackTuples();
+				uint32_t numColumns = c_orders_copy.m_RI.attrNames.size();
+				cout << "Client: Sending " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
+				cout << "Client: First few values being sent: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
 				}
 				cout << endl;
 				
-				// Send number of columns first
-				gParty.Send(numColumns);
 				// Then send the packed tuples
 				gParty.Send(filtered_packedTuples);
 			}
-			if(!c_orders.IsDummy())
+			else
 			{	
-				// Receive number of columns first
-				uint32_t numColumns;
-				gParty.Recv(numColumns);
-				
 				// Then receive the packed tuples
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
 				
-				cout << "Client: Received " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
-				cout << "Client: First few values received: ";
+				cout << "Server: Received " << filtered_packedTuples.size() << " values (" << filtered_packedTuples.size()/numColumns << " tuples with " << numColumns << " columns each)" << endl;
+				cout << "Server: First few values received: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
 					cout << filtered_packedTuples[i] << " ";
 				}
 				cout << endl;
 
-				Relation c_orders_copy = c_orders;
-				c_orders_copy.RemoveZeroAnnotatedTuples();
-				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
+				Relation s_orders_copy = s_orders;
+				s_orders_copy.RemoveZeroAnnotatedTuples();
+				std::vector<uint64_t> s_filtered_packedTuples = s_orders_copy.PackTuples();
 
-				cout << "Client: Local filtered tuples size: " << c_filtered_packedTuples.size() << " values (" << c_filtered_packedTuples.size()/c_orders_copy.m_RI.attrNames.size() << " tuples with " << c_orders_copy.m_RI.attrNames.size() << " columns each)" << endl;
-				cout << "Client: First few local values: ";
-				for(int i = 0; i < std::min(5, (int)c_filtered_packedTuples.size()); i++) {
-					cout << c_filtered_packedTuples[i] << " ";
+				cout << "Server: Local filtered tuples size: " << s_filtered_packedTuples.size() << " values (" << s_filtered_packedTuples.size()/s_orders_copy.m_RI.attrNames.size() << " tuples with " << s_orders_copy.m_RI.attrNames.size() << " columns each)" << endl;
+				cout << "Server: First few local values: ";
+				for(int i = 0; i < std::min(5, (int)s_filtered_packedTuples.size()); i++) {
+					cout << s_filtered_packedTuples[i] << " ";
 				}
 				cout << endl;
 				
 				// Verify size and content of filtered tuples (this matches print behavior)
-				if (c_filtered_packedTuples.size() != filtered_packedTuples.size()) {
+				if (s_filtered_packedTuples.size() != filtered_packedTuples.size()) {
 					cout << "Result verification failed! Dual Execution relations would have different structures." << endl;
-					cout << "Client filtered relation size: " << c_filtered_packedTuples.size() << endl;
-					cout << "Server filtered relation size: " << filtered_packedTuples.size() << endl;
+					cout << "Server filtered relation size: " << s_filtered_packedTuples.size() << endl;
+					cout << "Client filtered relation size: " << filtered_packedTuples.size() << endl;
 					verified = false;
 				} else {
 					// Compare content of what would be printed
-					for (uint32_t i = 0; i < c_filtered_packedTuples.size(); i++) {
-						if (c_filtered_packedTuples[i] != filtered_packedTuples[i]) {
+					for (uint32_t i = 0; i < s_filtered_packedTuples.size(); i++) {
+						if (s_filtered_packedTuples[i] != filtered_packedTuples[i]) {
 							cout << "Result verification failed! Dual Execution content would differ at position " << i << endl;
-							cout << "Client value: " << c_filtered_packedTuples[i] << endl;
-							cout << "Server value: " << filtered_packedTuples[i] << endl;
+							cout << "Server value: " << s_filtered_packedTuples[i] << endl;
+							cout << "Client value: " << filtered_packedTuples[i] << endl;
 							verified = false;
 							break;
 						}
