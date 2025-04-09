@@ -455,8 +455,6 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 		s_orders.Aggregate(o_groupBy);
 
 		if(printResult){
-			c_orders.RevealAnnotToOwner();
-			s_orders.RevealAnnotToOwner();
 			bool verified = true;
 			if (gParty.GetRole() == CLIENT)
 			{
@@ -513,6 +511,8 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				}
 			}
 			if (verified){
+				c_orders.RevealAnnotToOwner();
+				s_orders.RevealAnnotToOwner();
 				if(resultProtection){
 					cout << "c_orders.Print_Avg_ResultProtection(\"AVG(orders.annotation)\")" << endl;
 					c_orders.Print_Avg_ResultProtection("AVG(orders.annotation)");
