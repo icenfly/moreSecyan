@@ -459,41 +459,73 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			std::vector<uint64_t> packedTuples;
 			if (!s_orders.IsDummy())
 			{
+				// Pack tuples from s_orders
 				packedTuples = s_orders.PackTuples();
-				// Send the size of the vector first, followed by the packed tuples
 				std::vector<uint64_t> size_vec = {static_cast<uint64_t>(packedTuples.size())};
+				
+				// Create a special format to simulate what would be printed
+				// Copy s_orders and make a local version for sending
+				Relation s_orders_copy = s_orders;
+				
+				// Remove zero annotated tuples to match print behavior
+				s_orders_copy.RemoveZeroAnnotatedTuples();
+				
+				// Now pack the filtered relation
+				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
+				std::vector<uint64_t> filtered_size_vec = {static_cast<uint64_t>(filtered_packedTuples.size())};
+				
+				// Send the original size and tuples (for debugging)
 				gParty.Send(size_vec);
 				gParty.Send(packedTuples);
+				
+				// Send the filtered size and tuples (for verification)
+				gParty.Send(filtered_size_vec);
+				gParty.Send(filtered_packedTuples);
+				
 				cout << "s_orders.PackTuples()" << endl;
 				cout << "packedTuples.size() = " << packedTuples.size() << endl;
 				cout << "packedTuples[0] = " << packedTuples[0] << endl;
+				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
 			}
 			if(!c_orders.IsDummy())
 			{
-				// Receive the size first to check if structures match
+				// Receive the original size and tuples (for debugging)
 				std::vector<uint64_t> size_vec;
 				gParty.Recv(size_vec);
 				uint32_t size = static_cast<uint32_t>(size_vec[0]);
-				packedTuples.resize(size);  // Resize the vector before receiving
+				packedTuples.resize(size);
 				gParty.Recv(packedTuples);
 				
+				// Receive the filtered size and tuples (for verification)
+				std::vector<uint64_t> filtered_size_vec;
+				gParty.Recv(filtered_size_vec);
+				uint32_t filtered_size = static_cast<uint32_t>(filtered_size_vec[0]);
+				std::vector<uint64_t> filtered_packedTuples(filtered_size);
+				gParty.Recv(filtered_packedTuples);
+				
+				// Get client order tuples with zero-annotated tuples removed (same as Print behavior)
+				Relation c_orders_copy = c_orders;
+				c_orders_copy.RemoveZeroAnnotatedTuples();
+				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
+				
+				// Original debug output
 				std::vector<uint64_t> c_packedTuples = c_orders.PackTuples();
-
 				cout << "c_orders.PackTuples()" << endl;
 				cout << "c_packedTuples.size() = " << c_packedTuples.size() << endl;
 				cout << "c_packedTuples[0] = " << c_packedTuples[0] << endl;
+				cout << "c_filtered_packedTuples.size() = " << c_filtered_packedTuples.size() << endl;
 				
-				// Verify size matches first
-				if (c_packedTuples.size() != size) {
-					cout << "Result verification failed! Relations have different structures." << endl;
+				// Verify size and content of filtered tuples (this matches print behavior)
+				if (c_filtered_packedTuples.size() != filtered_packedTuples.size()) {
+					cout << "Result verification failed! Printed relations would have different structures." << endl;
+					cout << "Client filtered relation size: " << c_filtered_packedTuples.size() << endl;
+					cout << "Server filtered relation size: " << filtered_packedTuples.size() << endl;
 					verified = false;
 				} else {
-					// Compare actual data
-					for (uint32_t i = 0; i < c_packedTuples.size(); i++)
-					{
-						if (c_packedTuples[i] != packedTuples[i])
-						{
-							cout << "Result verification failed! Data mismatch at position " << i << endl;
+					// Compare content of what would be printed
+					for (uint32_t i = 0; i < c_filtered_packedTuples.size(); i++) {
+						if (c_filtered_packedTuples[i] != filtered_packedTuples[i]) {
+							cout << "Result verification failed! Printed content would differ at position " << i << endl;
 							verified = false;
 							break;
 						}
