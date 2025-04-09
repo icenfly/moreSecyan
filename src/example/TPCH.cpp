@@ -462,24 +462,36 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 
 				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
-				std::vector<uint64_t> size_vec = {static_cast<uint64_t>(filtered_packedTuples.size())};
-
-				gParty.Send(size_vec);
+				cout << "Server: Sending " << filtered_packedTuples.size() << " tuples" << endl;
+				cout << "Server: First few values being sent: ";
+				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
+					cout << filtered_packedTuples[i] << " ";
+				}
+				cout << endl;
 				
-				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
+				gParty.Send(filtered_packedTuples);
 			}
 			if(!c_orders.IsDummy())
 			{	
 				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
-				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
-				cout << "filtered_packedTuples[0] = " << filtered_packedTuples[0] << endl;
+				cout << "Client: Received " << filtered_packedTuples.size() << " tuples" << endl;
+				cout << "Client: First few values received: ";
+				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
+					cout << filtered_packedTuples[i] << " ";
+				}
+				cout << endl;
 
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
 				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
 
-				cout << "c_filtered_packedTuples.size() = " << c_filtered_packedTuples.size() << endl;
+				cout << "Client: Local filtered tuples size: " << c_filtered_packedTuples.size() << endl;
+				cout << "Client: First few local values: ";
+				for(int i = 0; i < std::min(5, (int)c_filtered_packedTuples.size()); i++) {
+					cout << c_filtered_packedTuples[i] << " ";
+				}
+				cout << endl;
 				
 				// Verify size and content of filtered tuples (this matches print behavior)
 				if (c_filtered_packedTuples.size() != filtered_packedTuples.size()) {
@@ -492,6 +504,8 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 					for (uint32_t i = 0; i < c_filtered_packedTuples.size(); i++) {
 						if (c_filtered_packedTuples[i] != filtered_packedTuples[i]) {
 							cout << "Result verification failed! Dual Execution content would differ at position " << i << endl;
+							cout << "Client value: " << c_filtered_packedTuples[i] << endl;
+							cout << "Server value: " << filtered_packedTuples[i] << endl;
 							verified = false;
 							break;
 						}
