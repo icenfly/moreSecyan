@@ -478,12 +478,12 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				gParty.Send(filtered_size_vec);
 				gParty.Send(filtered_packedTuples);
 				
-				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
+				cout << "filtered_packedTuples.size() = " << filtered_size_vec[0] << endl;
 			}
 			if(!c_orders.IsDummy())
 			{	
 				// Receive the filtered size and tuples (for verification)
-				std::vector<uint64_t> filtered_size_vec;
+				std::vector<uint64_t> filtered_size_vec(1);
 				gParty.Recv(filtered_size_vec);
 				uint32_t filtered_size = static_cast<uint32_t>(filtered_size_vec[0]);
 				std::vector<uint64_t> filtered_packedTuples(filtered_size);
@@ -493,14 +493,15 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
 				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
+				uint32_t c_filtered_size = static_cast<uint32_t>(c_filtered_packedTuples.size());
 				
-				cout << "c_filtered_packedTuples.size() = " << c_filtered_packedTuples.size() << endl;
+				cout << "c_filtered_packedTuples.size() = " << c_filtered_size << endl;
 				
 				// Verify size and content of filtered tuples (this matches print behavior)
-				if (c_filtered_packedTuples.size() != filtered_packedTuples.size()) {
+				if (c_filtered_size != filtered_size) {
 					cout << "Result verification failed! Dual Execution relations would have different structures." << endl;
-					cout << "Client filtered relation size: " << c_filtered_packedTuples.size() << endl;
-					cout << "Server filtered relation size: " << filtered_packedTuples.size() << endl;
+					cout << "Client filtered relation size: " << c_filtered_size << endl;
+					cout << "Server filtered relation size: " << filtered_size << endl;
 					verified = false;
 				} else {
 					// Compare content of what would be printed
