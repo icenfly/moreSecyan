@@ -465,7 +465,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				gParty.Send(size_vec);
 				gParty.Send(packedTuples);
 			}
-			else
+			if(!c_orders.IsDummy())
 			{
 				// Receive the size first to check if structures match
 				std::vector<uint64_t> size_vec;
