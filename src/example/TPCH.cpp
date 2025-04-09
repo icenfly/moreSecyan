@@ -462,7 +462,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			{
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
-				std::vector<uint64_t> send_filtered_packedTuples = c_orders_copy.PackTuples();
+				vector<uint64_t> send_filtered_packedTuples = c_orders_copy.PackTuples();
 				cout << "Client: Packed tuples size: " << send_filtered_packedTuples.size() << endl;
 				cout << "Client: First few values being sent: ";
 				for(int i = 0; i < std::min(5, (int)send_filtered_packedTuples.size()); i++) {
@@ -476,7 +476,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			else
 			{	
 				// Then receive the packed tuples
-				std::vector<uint64_t> filtered_packedTuples;
+				vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
 				cout << "Server: First few values received: ";
 				for(int i = 0; i < std::min(5, (int)filtered_packedTuples.size()); i++) {
@@ -486,7 +486,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 
 				Relation s_orders_copy = s_orders;
 				s_orders_copy.RemoveZeroAnnotatedTuples();
-				std::vector<uint64_t> s_filtered_packedTuples = s_orders_copy.PackTuples();
+				vector<uint64_t> s_filtered_packedTuples = s_orders_copy.PackTuples();
 				cout << "Server: First few local values: ";
 				for(int i = 0; i < std::min(5, (int)s_filtered_packedTuples.size()); i++) {
 					cout << s_filtered_packedTuples[i] << " ";
