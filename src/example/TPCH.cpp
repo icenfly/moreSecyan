@@ -460,19 +460,34 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			if (c_orders.IsDummy())
 			{
 				packedTuples = s_orders.PackTuples();
+				// Send the size of the vector first, followed by the packed tuples
+				uint32_t size = packedTuples.size();
+				gParty.Send(&size, 1);
 				gParty.Send(packedTuples);
 			}
 			else
 			{
-				gParty.Recv(packedTuples);
+				// Receive the size first to check if structures match
+				uint32_t size;
+				gParty.Recv(&size, 1);
+				gParty.Recv(packedTuples, size);
+				
 				std::vector<uint64_t> c_packedTuples = c_orders.PackTuples();
-				for (uint32_t i = 0; i < c_packedTuples.size(); i++)
-				{
-					if (c_packedTuples[i] != packedTuples[i])
+				
+				// Verify size matches first
+				if (c_packedTuples.size() != size) {
+					cout << "Result verification failed! Relations have different structures." << endl;
+					verified = false;
+				} else {
+					// Compare actual data
+					for (uint32_t i = 0; i < c_packedTuples.size(); i++)
 					{
-						cout << "Result verification failed! Abort!" << endl;
-						verified = false;
-						break;
+						if (c_packedTuples[i] != packedTuples[i])
+						{
+							cout << "Result verification failed! Data mismatch at position " << i << endl;
+							verified = false;
+							break;
+						}
 					}
 				}
 			}
