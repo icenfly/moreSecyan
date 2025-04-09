@@ -461,7 +461,7 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 				Relation s_orders_copy = s_orders;
 				s_orders_copy.RemoveZeroAnnotatedTuples();
 
-				std::vector<uint32_t> filtered_packedTuples = s_orders_copy.PackTuples();
+				std::vector<uint64_t> filtered_packedTuples = s_orders_copy.PackTuples();
 
 				gParty.Send(filtered_packedTuples);
 				
@@ -469,13 +469,13 @@ void run_Q3_m(DataSize ds, bool printResult, bool resultProtection, bool dualExe
 			}
 			if(!c_orders.IsDummy())
 			{	
-				std::vector<uint32_t> filtered_packedTuples;
+				std::vector<uint64_t> filtered_packedTuples;
 				gParty.Recv(filtered_packedTuples);
 				cout << "filtered_packedTuples.size() = " << filtered_packedTuples.size() << endl;
 
 				Relation c_orders_copy = c_orders;
 				c_orders_copy.RemoveZeroAnnotatedTuples();
-				std::vector<uint32_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
+				std::vector<uint64_t> c_filtered_packedTuples = c_orders_copy.PackTuples();
 
 				cout << "c_filtered_packedTuples.size() = " << c_filtered_packedTuples.size() << endl;
 				
