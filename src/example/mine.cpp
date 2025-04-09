@@ -143,6 +143,17 @@ void test_one_psi()
   		gParty.Recv(end_receivedata0);
   		gParty.Recv(end_receivedata1);
 
+		cout << "end_receivedata0:" << endl; 
+		for(auto i : end_receivedata0){
+			cout << i << " ";
+		}
+		cout << endl;
+		cout << "end_receivedata1:" << endl; 
+		for(auto i : end_receivedata1){
+			cout << i << " ";
+		}
+		cout << endl;
+
       	int abc_count=0;
 		int k = 0;
 		for (size_t i = 0; i < Alicedata0.size(); ++i) {
@@ -196,6 +207,17 @@ void test_one_psi()
         		k = index + 1; 
     		}
 		}
+
+		cout << "end_senddata0:" << endl; 
+		for(auto i : end_senddata0){
+			cout << i << " ";
+		}
+		cout << endl;
+		cout << "end_senddata1:" << endl; 
+		for(auto i : end_senddata1){
+			cout << i << " ";
+		}
+		cout << endl;
 		// todo 加噪声（差分隐私）
 		gParty.Send(end_senddata0);
   		gParty.Send(end_senddata1);
