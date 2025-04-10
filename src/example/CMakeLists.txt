@@ -38,3 +38,20 @@ target_link_libraries(psi
 target_link_libraries(mpsi
     PUBLIC secyan)
 
+# Copy web frontend files to build directory
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/example/web)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/web/index.html
+     ${CMAKE_CURRENT_SOURCE_DIR}/web/frontend.js
+     ${CMAKE_CURRENT_SOURCE_DIR}/web/server.js
+     ${CMAKE_CURRENT_SOURCE_DIR}/web/package.json
+     DESTINATION ${CMAKE_BINARY_DIR}/src/example/web)
+
+# Custom target for installing npm dependencies
+add_custom_target(web_dependencies
+    COMMAND cd ${CMAKE_BINARY_DIR}/src/example/web && npm install
+    DEPENDS ${CMAKE_BINARY_DIR}/src/example/web/package.json
+    COMMENT "Installing web frontend dependencies")
+
+# Make mpsi target depend on web_dependencies
+add_dependencies(mpsi web_dependencies)
+
