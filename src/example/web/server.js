@@ -44,7 +44,7 @@ function resetState() {
 }
 
 // Get path to mpsi executable
-const mpsiPath = path.resolve(__dirname, '../../../../build/src/example/mpsi');
+const mpsiPath = path.resolve(__dirname, '../mpsi');
 
 // API endpoint to start server process
 app.post('/api/start-server', (req, res) => {
