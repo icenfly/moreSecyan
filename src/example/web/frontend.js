@@ -154,8 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         appendClientLog(results.client);
                     }
                     
-                    updateStatus('Query execution completed!', 'success');
-                    executeBtn.disabled = false;
+                    updateStatus('Query execution completed! Please reconnect to run another query.', 'success');
+                    
+                    // UPDATED BEHAVIOR: Reset connection state after query execution
+                    serverRunning = false;
+                    clientRunning = false;
+                    executeBtn.disabled = true;
+                    connectBtn.disabled = false;  // Re-enable Connect button
                 }
             }, 1000);
             
