@@ -146,20 +146,18 @@ app.post('/api/execute-query', (req, res) => {
         
         // Send query selection to server and client
         serverProcess.stdin.write(`${query}\n`);
-        clientProcess.stdin.write(`${query}\n`);
-        
         // Send data size selection
         serverProcess.stdin.write(`${dataSize}\n`);
-        clientProcess.stdin.write(`${dataSize}\n`);
-        
         // Send result protection selection
         serverProcess.stdin.write(`${resultProtection}\n`);
-        clientProcess.stdin.write(`${resultProtection}\n`);
-        
         // Send dual execution selection
         serverProcess.stdin.write(`${dualExecution}\n`);
+
+        clientProcess.stdin.write(`${query}\n`);
+        clientProcess.stdin.write(`${dataSize}\n`);
+        clientProcess.stdin.write(`${resultProtection}\n`);
         clientProcess.stdin.write(`${dualExecution}\n`);
-        
+
         res.status(200).json({ success: true });
     } catch (error) {
         console.error('Failed to execute query:', error);
