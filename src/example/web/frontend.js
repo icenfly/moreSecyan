@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let serverRunning = false;
     let clientRunning = false;
+    let connectionTimeoutId = null;
+    let queryTimeoutId = null;
     
     // Function to update the status with appropriate styling
     function updateStatus(message, type = '') {
@@ -29,6 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
     connectBtn.addEventListener('click', async () => {
         updateStatus('Connecting...', 'info');
         connectBtn.disabled = true;
+        
+        // Clear any existing timeouts
+        if (connectionTimeoutId) {
+            clearTimeout(connectionTimeoutId);
+            connectionTimeoutId = null;
+        }
         
         // Clear previous logs
         serverLog.textContent = '';
@@ -73,6 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (status.connected) {
                     clearInterval(connectionCheckInterval);
+                    
+                    // Clear the timeout once connected
+                    if (connectionTimeoutId) {
+                        clearTimeout(connectionTimeoutId);
+                        connectionTimeoutId = null;
+                    }
+                    
                     updateStatus('Server and Client connected successfully!', 'success');
                     executeBtn.disabled = false;
                     appendServerLog('Connection established!');
@@ -81,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1000);
             
             // Set a timeout for connection
-            setTimeout(() => {
+            connectionTimeoutId = setTimeout(() => {
                 clearInterval(connectionCheckInterval);
                 if (!executeBtn.disabled) return; // Already connected
                 
@@ -101,6 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!serverRunning || !clientRunning) {
             updateStatus('Server and Client must be connected first', 'error');
             return;
+        }
+        
+        // Clear any existing timeouts
+        if (queryTimeoutId) {
+            clearTimeout(queryTimeoutId);
+            queryTimeoutId = null;
         }
         
         executeBtn.disabled = true;
@@ -134,40 +155,54 @@ document.addEventListener('DOMContentLoaded', () => {
             appendServerLog('\nExecuting query...');
             appendClientLog('\nExecuting query...');
             
+            let queryCompleted = false;
+            
             // Poll for results
             const resultCheckInterval = setInterval(async () => {
-                const resultsResponse = await fetch('/api/query-results');
-                const results = await resultsResponse.json();
-                
-                if (results.completed) {
-                    clearInterval(resultCheckInterval);
+                try {
+                    const resultsResponse = await fetch('/api/query-results');
+                    const results = await resultsResponse.json();
                     
-                    // Update server log
-                    if (results.server) {
-                        appendServerLog('\n--- Query Results ---');
-                        appendServerLog(results.server);
+                    if (results.completed) {
+                        clearInterval(resultCheckInterval);
+                        queryCompleted = true;
+                        
+                        // Clear the timeout once completed
+                        if (queryTimeoutId) {
+                            clearTimeout(queryTimeoutId);
+                            queryTimeoutId = null;
+                        }
+                        
+                        // Update server log
+                        if (results.server) {
+                            appendServerLog('\n--- Query Results ---');
+                            appendServerLog(results.server);
+                        }
+                        
+                        // Update client log
+                        if (results.client) {
+                            appendClientLog('\n--- Query Results ---');
+                            appendClientLog(results.client);
+                        }
+                        
+                        updateStatus('Query execution completed! Please reconnect to run another query.', 'success');
+                        
+                        // UPDATED BEHAVIOR: Reset connection state after query execution
+                        serverRunning = false;
+                        clientRunning = false;
+                        executeBtn.disabled = true;
+                        connectBtn.disabled = false;  // Re-enable Connect button
                     }
-                    
-                    // Update client log
-                    if (results.client) {
-                        appendClientLog('\n--- Query Results ---');
-                        appendClientLog(results.client);
-                    }
-                    
-                    updateStatus('Query execution completed! Please reconnect to run another query.', 'success');
-                    
-                    // UPDATED BEHAVIOR: Reset connection state after query execution
-                    serverRunning = false;
-                    clientRunning = false;
-                    executeBtn.disabled = true;
-                    connectBtn.disabled = false;  // Re-enable Connect button
+                } catch (error) {
+                    console.error('Error checking query results:', error);
+                    // Don't clear the interval, keep trying
                 }
             }, 1000);
             
             // Set a timeout for query execution
-            setTimeout(() => {
-                clearInterval(resultCheckInterval);
-                if (executeBtn.disabled) {
+            queryTimeoutId = setTimeout(() => {
+                if (!queryCompleted) {
+                    clearInterval(resultCheckInterval);
                     updateStatus('Query execution taking longer than expected. Please check logs for status.', 'info');
                     executeBtn.disabled = false;
                 }
