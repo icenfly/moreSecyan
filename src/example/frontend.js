@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultTable = document.getElementById('resultTable');
     const runningTime = document.getElementById('runningTime');
     const commCost = document.getElementById('commCost');
+    const emptyResultsMessage = document.getElementById('emptyResultsMessage');
     
     let serverRunning = false;
     let clientRunning = false;
@@ -33,10 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to parse and display query results
     function displayQueryResults(resultText) {
-        // Hide results container by default
-        resultsContainer.style.display = 'none';
-        
-        if (!resultText) return;
+        if (!resultText) {
+            // Reset display state
+            emptyResultsMessage.style.display = 'block';
+            resultTable.style.display = 'none';
+            runningTime.textContent = '-';
+            commCost.textContent = '-';
+            return;
+        }
         
         try {
             // Reset the table and metrics
@@ -76,8 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     resultTable.appendChild(dataRow);
                 }
                 
-                // Show the results container
-                resultsContainer.style.display = 'flex';
+                // Show the table and hide the empty message
+                emptyResultsMessage.style.display = 'none';
+                resultTable.style.display = 'table';
+            } else {
+                // No table data found
+                emptyResultsMessage.style.display = 'block';
+                resultTable.style.display = 'none';
             }
             
             // Extract metrics
@@ -93,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error('Error parsing query results:', error);
+            emptyResultsMessage.style.display = 'block';
+            resultTable.style.display = 'none';
         }
     }
     
@@ -111,8 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
         serverLog.textContent = '';
         clientLog.textContent = '';
         
-        // Hide results container when reconnecting
-        resultsContainer.style.display = 'none';
+        // Reset results display
+        displayQueryResults(null);
         
         try {
             // Start server process
@@ -198,6 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         executeBtn.disabled = true;
         updateStatus('Executing query...', 'info');
+        
+        // Reset results display
+        displayQueryResults(null);
         
         // Get user selected options
         const query = document.getElementById('query').value;
