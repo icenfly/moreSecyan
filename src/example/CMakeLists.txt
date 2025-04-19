@@ -39,10 +39,10 @@ target_link_libraries(mpsi
     PUBLIC secyan)
 
 # Copy web frontend files to build directory
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/web/index.html
-     ${CMAKE_CURRENT_SOURCE_DIR}/web/frontend.js
-     ${CMAKE_CURRENT_SOURCE_DIR}/web/server.js
-     ${CMAKE_CURRENT_SOURCE_DIR}/web/package.json
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/index.html
+     ${CMAKE_CURRENT_SOURCE_DIR}/frontend.js
+     ${CMAKE_CURRENT_SOURCE_DIR}/server.js
+     ${CMAKE_CURRENT_SOURCE_DIR}/package.json
      DESTINATION ${CMAKE_BINARY_DIR}/src/example)
 
 # Custom target for installing npm dependencies

@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const connectionStatus = document.getElementById('connectionStatus');
     const serverLog = document.getElementById('serverLog');
     const clientLog = document.getElementById('clientLog');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const resultTable = document.getElementById('resultTable');
+    const runningTime = document.getElementById('runningTime');
+    const commCost = document.getElementById('commCost');
     
     let serverRunning = false;
     let clientRunning = false;
@@ -26,6 +30,71 @@ document.addEventListener('DOMContentLoaded', () => {
         clientLog.textContent += message + '\n';
         clientLog.scrollTop = clientLog.scrollHeight;
     }
+
+    // Function to parse and display query results
+    function displayQueryResults(resultText) {
+        // Hide results container by default
+        resultsContainer.style.display = 'none';
+        
+        if (!resultText) return;
+        
+        try {
+            // Reset the table and metrics
+            resultTable.innerHTML = '';
+            runningTime.textContent = '-';
+            commCost.textContent = '-';
+            
+            // Regular expressions to extract data
+            const tableRegex = /^(row_num\t.*(?:\n\d+\t.*)*)$/m;
+            const runningTimeRegex = /Running time: (\d+)ms/;
+            const commCostRegex = /Communication cost: ([\d\.]+) MB/;
+            
+            // Extract table data
+            const tableMatch = resultText.match(tableRegex);
+            if (tableMatch && tableMatch[1]) {
+                const tableLines = tableMatch[1].split('\n');
+                
+                // Create table header
+                const headerRow = document.createElement('tr');
+                const headerCells = tableLines[0].split('\t');
+                headerCells.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                resultTable.appendChild(headerRow);
+                
+                // Create table rows
+                for (let i = 1; i < tableLines.length; i++) {
+                    const dataRow = document.createElement('tr');
+                    const dataCells = tableLines[i].split('\t');
+                    dataCells.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+                        dataRow.appendChild(td);
+                    });
+                    resultTable.appendChild(dataRow);
+                }
+                
+                // Show the results container
+                resultsContainer.style.display = 'flex';
+            }
+            
+            // Extract metrics
+            const timeMatch = resultText.match(runningTimeRegex);
+            if (timeMatch && timeMatch[1]) {
+                runningTime.textContent = timeMatch[1] + ' ms';
+            }
+            
+            const costMatch = resultText.match(commCostRegex);
+            if (costMatch && costMatch[1]) {
+                commCost.textContent = costMatch[1] + ' MB';
+            }
+            
+        } catch (error) {
+            console.error('Error parsing query results:', error);
+        }
+    }
     
     // Connect button click handler
     connectBtn.addEventListener('click', async () => {
@@ -41,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear previous logs
         serverLog.textContent = '';
         clientLog.textContent = '';
+        
+        // Hide results container when reconnecting
+        resultsContainer.style.display = 'none';
         
         try {
             // Start server process
@@ -183,6 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (results.client) {
                             appendClientLog('\n--- Query Results ---');
                             appendClientLog(results.client);
+                            
+                            // Parse and display the structured results
+                            displayQueryResults(results.client);
                         }
                         
                         updateStatus('Query execution completed! Please reconnect to run another query.', 'success');
