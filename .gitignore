@@ -2,3 +2,4 @@ Debug
 Release
 build/
 *.csv
+.DS_Store
