@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecYAN Multiparty PSI</title>
+    <title>基于安全多方计算的数据库连接查询算法界面</title>
     <style>
         html, body {
             font-family: Arial, sans-serif;
@@ -195,14 +195,14 @@
     </style>
 </head>
 <body>
-    <h1>MPC-based Database Query Frontend</h1>
+    <h1>基于安全多方计算的数据库连接查询算法界面</h1>
     
     <div class="main-content">
         <div class="top-container">
             <div class="panel">
-                <h2>Query Configuration</h2>
+                <h2>查询配置</h2>
                 <div class="form-group">
-                    <label for="query">Query:</label>
+                    <label for="query">查询类型:</label>
                     <select id="query">
                         <option value="0">Q3</option>
                         <option value="1">Q10</option>
@@ -213,7 +213,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="dataSize">Data Size:</label>
+                    <label for="dataSize">数据大小:</label>
                     <select id="dataSize">
                         <option value="0">1MB</option>
                         <option value="1">3MB</option>
@@ -224,46 +224,46 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="resultProtection">Result Protection:</label>
+                    <label for="resultProtection">结果保护:</label>
                     <select id="resultProtection">
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
+                        <option value="0">否</option>
+                        <option value="1">是</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="dualExecution">Dual Execution:</label>
+                    <label for="dualExecution">双向执行:</label>
                     <select id="dualExecution">
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
+                        <option value="0">否</option>
+                        <option value="1">是</option>
                     </select>
                 </div>
                 
-                <button id="connectBtn">Connect Server and Client</button>
-                <button id="executeBtn" disabled>Execute Query</button>
+                <button id="connectBtn">连接服务器和客户端</button>
+                <button id="executeBtn" disabled>执行查询</button>
                 
                 <div id="connectionStatus" class="status">
-                    Not connected. Please click "Connect Server and Client" to start.
+                    未连接。请点击"连接服务器和客户端"开始。
                 </div>
             </div>
             
             <div class="panel">
-                <h2>Server Output</h2>
+                <h2>服务器输出</h2>
                 <div id="serverLog" class="log"></div>
             </div>
             
             <div class="panel">
-                <h2>Client Output</h2>
+                <h2>客户端输出</h2>
                 <div id="clientLog" class="log"></div>
             </div>
         </div>
         
         <!-- Query Results section at bottom 1/3 - always visible -->
         <div id="resultsContainer" class="results-panel">
-            <h2>Query Results</h2>
+            <h2>查询结果</h2>
             <div class="table-container">
                 <div id="emptyResultsMessage" class="empty-results-message">
-                    No query results to display. Execute a query to see results here.
+                    暂无查询结果可显示。执行查询后结果将在此处显示。
                 </div>
                 <table id="resultTable" class="result-table" style="display: none;">
                     <!-- Table headers and data will be inserted here by JavaScript -->
@@ -272,11 +272,11 @@
             
             <div class="result-metrics">
                 <div class="metric-card">
-                    <div class="metric-title">Running Time</div>
+                    <div class="metric-title">运行时间</div>
                     <div id="runningTime" class="metric-value">-</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-title">Communication Cost</div>
+                    <div class="metric-title">通信成本</div>
                     <div id="commCost" class="metric-value">-</div>
                 </div>
             </div>

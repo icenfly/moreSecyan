@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Extract metrics
             const timeMatch = resultText.match(runningTimeRegex);
             if (timeMatch && timeMatch[1]) {
-                runningTime.textContent = timeMatch[1] + ' ms';
+                runningTime.textContent = timeMatch[1] + ' 毫秒';
             }
             
             const costMatch = resultText.match(commCostRegex);
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
         } catch (error) {
-            console.error('Error parsing query results:', error);
+            console.error('解析查询结果时出错:', error);
             emptyResultsMessage.style.display = 'block';
             resultTable.style.display = 'none';
         }
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Connect button click handler
     connectBtn.addEventListener('click', async () => {
-        updateStatus('Connecting...', 'info');
+        updateStatus('正在连接...', 'info');
         connectBtn.disabled = true;
         
         // Clear any existing timeouts
@@ -128,35 +128,35 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             // Start server process
-            appendServerLog('Starting server process...');
+            appendServerLog('正在启动服务器进程...');
             const serverResponse = await fetch('/api/start-server', {
                 method: 'POST'
             });
             
             if (!serverResponse.ok) {
-                throw new Error('Failed to start server process');
+                throw new Error('启动服务器进程失败');
             }
             
             serverRunning = true;
-            appendServerLog('Server process started successfully');
-            appendServerLog('Waiting for connection...');
+            appendServerLog('服务器进程启动成功');
+            appendServerLog('等待连接...');
             
             // Wait a moment to ensure server is ready
             await new Promise(resolve => setTimeout(resolve, 1000));
             
             // Start client process
-            appendClientLog('Starting client process...');
+            appendClientLog('正在启动客户端进程...');
             const clientResponse = await fetch('/api/start-client', {
                 method: 'POST'
             });
             
             if (!clientResponse.ok) {
-                throw new Error('Failed to start client process');
+                throw new Error('启动客户端进程失败');
             }
             
             clientRunning = true;
-            appendClientLog('Client process started successfully');
-            appendClientLog('Establishing connection...');
+            appendClientLog('客户端进程启动成功');
+            appendClientLog('正在建立连接...');
             
             // Wait for connection to be established
             const connectionCheckInterval = setInterval(async () => {
@@ -172,10 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         connectionTimeoutId = null;
                     }
                     
-                    updateStatus('Server and Client connected successfully!', 'success');
+                    updateStatus('服务器和客户端连接成功！', 'success');
                     executeBtn.disabled = false;
-                    appendServerLog('Connection established!');
-                    appendClientLog('Connection established!');
+                    appendServerLog('连接已建立！');
+                    appendClientLog('连接已建立！');
                 }
             }, 1000);
             
@@ -184,13 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(connectionCheckInterval);
                 if (!executeBtn.disabled) return; // Already connected
                 
-                updateStatus('Connection timeout. Please try again.', 'error');
+                updateStatus('连接超时。请重试。', 'error');
                 connectBtn.disabled = false;
             }, 10000);
             
         } catch (error) {
-            console.error('Connection error:', error);
-            updateStatus(`Connection failed: ${error.message}`, 'error');
+            console.error('连接错误:', error);
+            updateStatus(`连接失败: ${error.message}`, 'error');
             connectBtn.disabled = false;
         }
     });
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Execute button click handler
     executeBtn.addEventListener('click', async () => {
         if (!serverRunning || !clientRunning) {
-            updateStatus('Server and Client must be connected first', 'error');
+            updateStatus('必须先连接服务器和客户端', 'error');
             return;
         }
         
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         executeBtn.disabled = true;
-        updateStatus('Executing query...', 'info');
+        updateStatus('正在执行查询...', 'info');
         
         // Reset results display
         displayQueryResults(null);
@@ -236,11 +236,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             if (!executeResponse.ok) {
-                throw new Error('Failed to execute query');
+                throw new Error('执行查询失败');
             }
             
-            appendServerLog('\nExecuting query...');
-            appendClientLog('\nExecuting query...');
+            appendServerLog('\n正在执行查询...');
+            appendClientLog('\n正在执行查询...');
             
             let queryCompleted = false;
             
@@ -262,20 +262,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Update server log
                         if (results.server) {
-                            appendServerLog('\n--- Query Results ---');
+                            appendServerLog('\n--- 查询结果 ---');
                             appendServerLog(results.server);
                         }
                         
                         // Update client log
                         if (results.client) {
-                            appendClientLog('\n--- Query Results ---');
+                            appendClientLog('\n--- 查询结果 ---');
                             appendClientLog(results.client);
                             
                             // Parse and display the structured results
                             displayQueryResults(results.client);
                         }
                         
-                        updateStatus('Query execution completed! Please reconnect to run another query.', 'success');
+                        updateStatus('查询执行完成！请重新连接以运行另一个查询。', 'success');
                         
                         // UPDATED BEHAVIOR: Reset connection state after query execution
                         serverRunning = false;
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         connectBtn.disabled = false;  // Re-enable Connect button
                     }
                 } catch (error) {
-                    console.error('Error checking query results:', error);
+                    console.error('检查查询结果时出错:', error);
                     // Don't clear the interval, keep trying
                 }
             }, 1000);
@@ -293,14 +293,14 @@ document.addEventListener('DOMContentLoaded', () => {
             queryTimeoutId = setTimeout(() => {
                 if (!queryCompleted) {
                     clearInterval(resultCheckInterval);
-                    updateStatus('Query execution taking longer than expected. Please check logs for status.', 'info');
+                    updateStatus('查询执行时间超过预期。请查看日志了解状态。', 'info');
                     executeBtn.disabled = false;
                 }
             }, 60000); // 1 minute timeout
             
         } catch (error) {
-            console.error('Execution error:', error);
-            updateStatus(`Query execution failed: ${error.message}`, 'error');
+            console.error('执行错误:', error);
+            updateStatus(`查询执行失败: ${error.message}`, 'error');
             executeBtn.disabled = false;
         }
     });
