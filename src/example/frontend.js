@@ -112,11 +112,21 @@ document.addEventListener('DOMContentLoaded', () => {
     connectBtn.addEventListener('click', async () => {
         updateStatus('正在连接...', 'info');
         connectBtn.disabled = true;
+        executeBtn.disabled = true; // Ensure execute button is disabled during connection
+        
+        // Reset the connection state
+        serverRunning = false;
+        clientRunning = false;
         
         // Clear any existing timeouts
         if (connectionTimeoutId) {
             clearTimeout(connectionTimeoutId);
             connectionTimeoutId = null;
+        }
+        
+        if (queryTimeoutId) {
+            clearTimeout(queryTimeoutId);
+            queryTimeoutId = null;
         }
         
         // Clear previous logs
@@ -127,6 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
         displayQueryResults(null);
         
         try {
+            // Terminate any existing processes first
+            const resetResponse = await fetch('/api/reset-state', {
+                method: 'POST'
+            });
+            
+            if (!resetResponse.ok) {
+                appendServerLog('Warning: Failed to reset previous connections. Continuing...');
+            }
+            
             // Start server process
             appendServerLog('正在启动服务器进程...');
             const serverResponse = await fetch('/api/start-server', {
@@ -186,12 +205,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 updateStatus('连接超时。请重试。', 'error');
                 connectBtn.disabled = false;
+                // Make sure to reset the connection state on timeout
+                serverRunning = false;
+                clientRunning = false;
             }, 10000);
             
         } catch (error) {
             console.error('连接错误:', error);
             updateStatus(`连接失败: ${error.message}`, 'error');
             connectBtn.disabled = false;
+            // Make sure to reset the connection state on error
+            serverRunning = false;
+            clientRunning = false;
         }
     });
     
@@ -214,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset results display
         displayQueryResults(null);
         
-        // Get user selected options
+        // Get user selected options at the time of execution, not before
         const query = document.getElementById('query').value;
         const dataSize = document.getElementById('dataSize').value;
         const resultProtection = document.getElementById('resultProtection').value;
@@ -244,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             let queryCompleted = false;
             
-            // Poll for results
+            // Poll for results with a shorter interval to detect responses faster
             const resultCheckInterval = setInterval(async () => {
                 try {
                     const resultsResponse = await fetch('/api/query-results');
@@ -287,14 +312,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('检查查询结果时出错:', error);
                     // Don't clear the interval, keep trying
                 }
-            }, 1000);
+            }, 500); // Reduced from 1000ms to 500ms for more responsive detection
             
             // Set a timeout for query execution
             queryTimeoutId = setTimeout(() => {
                 if (!queryCompleted) {
                     clearInterval(resultCheckInterval);
-                    updateStatus('查询执行时间超过预期。请查看日志了解状态。', 'info');
+                    updateStatus('查询执行时间超时。请尝试重新连接并再次执行查询。', 'error');
                     executeBtn.disabled = false;
+                    connectBtn.disabled = false;
+                    // Reset connection state on timeout
+                    serverRunning = false;
+                    clientRunning = false;
                 }
             }, 60000); // 1 minute timeout
             
@@ -302,6 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('执行错误:', error);
             updateStatus(`查询执行失败: ${error.message}`, 'error');
             executeBtn.disabled = false;
+            connectBtn.disabled = false;
         }
     });
 }); 
