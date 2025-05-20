@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     serverRunning = false;
                     clientRunning = false;
                 }
-            }, 60000); // 1 minute timeout
+            }, 120000); // 2 minute timeout
             
         } catch (error) {
             console.error('执行错误:', error);
