@@ -9,7 +9,7 @@
 
 using namespace std;
 using namespace SECYAN;
-function<run_query_m> query_funcs_m[QTOTAL] = {run_Q3_m, run_Q10_m, run_Q18_m, run_Q8_m, run_Q9_m};
+function<run_query_m> query_funcs_m[QTOTAL] = {run_Q3_m};
 
 int main(int argc, char **)
 {
@@ -33,9 +33,9 @@ int main(int argc, char **)
 
     QueryName qn;
     DataSize ds;
-    cout << "Which query to run? [0. Q3, 1. Q10, 2. Q18, 3. Q8, 4. Q9]: ";
+    cout << "Which query to run? [0. Q3]: ";
     cin >> iqn;
-    if (iqn < 0 || iqn >= 5)
+    if (iqn != 0)
     {
         cerr << "Query selection error!" << endl;
         exit(1);
